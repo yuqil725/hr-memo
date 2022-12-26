@@ -160,61 +160,6 @@ export default StyleSheet.create({
     paddingTop: 5,
   },
 
-  // COMPONENT - PROFILE ITEM
-  containerProfileItem: {
-    backgroundColor: WHITE,
-    paddingHorizontal: 10,
-    paddingBottom: 25,
-    margin: 20,
-    borderRadius: 8,
-    marginTop: -65,
-    elevation: 1,
-    shadowOpacity: 0.05,
-    shadowRadius: 10,
-    shadowColor: BLACK,
-    shadowOffset: { height: 0, width: 0 },
-  },
-  matchesProfileItem: {
-    width: 135,
-    marginTop: -15,
-    backgroundColor: PRIMARY_COLOR,
-    paddingVertical: 7,
-    paddingHorizontal: 20,
-    borderRadius: 20,
-    alignSelf: "center",
-  },
-  matchesTextProfileItem: {
-    color: WHITE,
-    textAlign: "center",
-  },
-  name: {
-    paddingTop: 25,
-    paddingBottom: 5,
-    color: DARK_GRAY,
-    fontSize: 15,
-    textAlign: "center",
-  },
-  descriptionProfileItem: {
-    color: GRAY,
-    textAlign: "center",
-    paddingBottom: 20,
-    fontSize: 13,
-  },
-  info: {
-    paddingVertical: 8,
-    flexDirection: "row",
-    alignItems: "center",
-  },
-  iconProfile: {
-    fontSize: 12,
-    color: DARK_GRAY,
-    paddingHorizontal: 10,
-  },
-  infoContent: {
-    color: GRAY,
-    fontSize: 13,
-  },
-
   // CONTAINER - GENERAL
   bg: {
     flex: 1,

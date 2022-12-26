@@ -1,7 +1,7 @@
 import React from "react";
 import { Text, View, Image, Dimensions, TouchableOpacity } from "react-native";
 import Icon from "./Icon";
-import { CardItemT } from "../types";
+import { TCardItem } from "../types";
 import styles, {
   DISLIKE_ACTIONS,
   FLASH_ACTIONS,
@@ -18,7 +18,7 @@ const CardItem = ({
   isOnline,
   matches,
   name,
-}: CardItemT) => {
+}: TCardItem) => {
   // Custom styling
   const fullWidth = Dimensions.get("window").width;
 

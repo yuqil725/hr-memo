@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 import {
   ScrollView,
   View,
@@ -9,19 +9,41 @@ import {
 import { Icon, ProfileItem } from "../components";
 import DEMO from "../assets/data/demo";
 import styles, { WHITE } from "../assets/styles";
+import { ApiPofile } from "../backend/appwrite/service/collection/profile";
+import { Constants } from "../Constants";
+import store, { RootState } from "../redux_modules";
+import { AChangeProfile } from "../redux_modules/action";
+import { TProfileItem, TSProfileItem } from "../types";
 
 const Profile = () => {
-  const {
-    age,
-    image,
-    info1,
-    info2,
-    info3,
-    info4,
-    location,
-    match,
-    name,
-  } = DEMO[7];
+  let apiPofile = new ApiPofile(
+    Constants.API_ENDPOINT,
+    Constants.P_NAMECARD_ID,
+    Constants.DB_NAMECARD_ID,
+    Constants.C_PROFILE_ID
+  );
+
+  let promise = apiPofile.queryByName("Yuqi Li");
+
+  useEffect(() => {
+    promise.then(
+      function (response: any) {
+        console.log("set state", response.documents[0]);
+        const newState = Object.fromEntries(
+          Object.entries(response.documents[0]).filter(([key]) =>
+            TSProfileItem.includes(key)
+          )
+        );
+        store.dispatch(AChangeProfile(newState));
+      },
+      function (error: any) {
+        console.error(error);
+      }
+    );
+  }, []);
+
+  const { age, image, info1, info2, info3, info4, location, match, name } =
+    DEMO[7];
 
   return (
     <ImageBackground
@@ -51,27 +73,7 @@ const Profile = () => {
           </View>
         </ImageBackground>
 
-        <ProfileItem
-          matches={match}
-          name={name}
-          age={age}
-          location={location}
-          info1={info1}
-          info2={info2}
-          info3={info3}
-          info4={info4}
-        />
-
-        <View style={styles.actionsProfile}>
-          <TouchableOpacity style={styles.circledButton}>
-            <Icon name="ellipsis-horizontal" size={20} color={WHITE} />
-          </TouchableOpacity>
-
-          <TouchableOpacity style={styles.roundedButton}>
-            <Icon name="chatbubble" size={20} color={WHITE} />
-            <Text style={styles.textButton}>Start chatting</Text>
-          </TouchableOpacity>
-        </View>
+        <ProfileItem />
       </ScrollView>
     </ImageBackground>
   );

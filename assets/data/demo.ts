@@ -1,4 +1,4 @@
-import { DataT } from "../../types";
+import { TData } from "../../types";
 import IMAGE_01 from "../images/01.jpg";
 import IMAGE_02 from "../images/02.jpg";
 import IMAGE_03 from "../images/03.jpg";
@@ -10,7 +10,7 @@ import IMAGE_08 from "../images/08.jpg";
 import IMAGE_09 from "../images/09.jpg";
 import IMAGE_10 from "../images/10.jpg";
 
-const data: DataT[] = [
+const data: TData[] = [
   {
     id: 1,
     name: "Leanne Graham",

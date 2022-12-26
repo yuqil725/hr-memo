@@ -17,56 +17,57 @@ const App = () => (
         options={{ headerShown: false, animationEnabled: false }}
       >
         {() => (
-          <Tab.Navigator
-            tabBarOptions={{
-              showLabel: false,
-              activeTintColor: PRIMARY_COLOR,
-              inactiveTintColor: DARK_GRAY,
-              labelStyle: {
-                fontSize: 14,
-                textTransform: "uppercase",
-                paddingTop: 10,
-              },
-              style: {
-                backgroundColor: WHITE,
-                borderTopWidth: 0,
-                marginBottom: 0,
-                shadowOpacity: 0.05,
-                shadowRadius: 10,
-                shadowColor: BLACK,
-                shadowOffset: { height: 0, width: 0 },
-              },
-            }}
-          >
-            <Tab.Screen
-              name="Explore"
-              component={Home}
-              options={{
-                tabBarIcon: ({ focused }) => (
-                  <TabBarIcon
-                    focused={focused}
-                    iconName="search"
-                    text="Explore"
-                  />
-                ),
+          <Provider store={store}>
+            <Tab.Navigator
+              tabBarOptions={{
+                showLabel: false,
+                activeTintColor: PRIMARY_COLOR,
+                inactiveTintColor: DARK_GRAY,
+                labelStyle: {
+                  fontSize: 14,
+                  textTransform: "uppercase",
+                  paddingTop: 10,
+                },
+                style: {
+                  backgroundColor: WHITE,
+                  borderTopWidth: 0,
+                  marginBottom: 0,
+                  shadowOpacity: 0.05,
+                  shadowRadius: 10,
+                  shadowColor: BLACK,
+                  shadowOffset: { height: 0, width: 0 },
+                },
               }}
-            />
+            >
+              <Tab.Screen
+                name="Explore"
+                component={Home}
+                options={{
+                  tabBarIcon: ({ focused }) => (
+                    <TabBarIcon
+                      focused={focused}
+                      iconName="search"
+                      text="Explore"
+                    />
+                  ),
+                }}
+              />
 
-            <Tab.Screen
-              name="Matches"
-              component={Matches}
-              options={{
-                tabBarIcon: ({ focused }) => (
-                  <TabBarIcon
-                    focused={focused}
-                    iconName="heart"
-                    text="Matches"
-                  />
-                ),
-              }}
-            />
+              <Tab.Screen
+                name="Matches"
+                component={Matches}
+                options={{
+                  tabBarIcon: ({ focused }) => (
+                    <TabBarIcon
+                      focused={focused}
+                      iconName="heart"
+                      text="Matches"
+                    />
+                  ),
+                }}
+              />
 
-            <Tab.Screen
+              {/* <Tab.Screen
               name="Chat"
               component={Messages}
               options={{
@@ -78,22 +79,23 @@ const App = () => (
                   />
                 ),
               }}
-            />
+            /> */}
 
-            <Tab.Screen
-              name="Profile"
-              component={Profile}
-              options={{
-                tabBarIcon: ({ focused }) => (
-                  <TabBarIcon
-                    focused={focused}
-                    iconName="person"
-                    text="Profile"
-                  />
-                ),
-              }}
-            />
-          </Tab.Navigator>
+              <Tab.Screen
+                name="Profile"
+                component={Profile}
+                options={{
+                  tabBarIcon: ({ focused }) => (
+                    <TabBarIcon
+                      focused={focused}
+                      iconName="person"
+                      text="Profile"
+                    />
+                  ),
+                }}
+              />
+            </Tab.Navigator>
+          </Provider>
         )}
       </Stack.Screen>
     </Stack.Navigator>
@@ -101,3 +103,14 @@ const App = () => (
 );
 
 export default App;
+
+// playground
+
+import { Constants } from "./Constants";
+import { ApiAuth } from "./backend/appwrite/service/auth";
+import { Provider } from "react-redux";
+import store from "./redux_modules";
+
+let apiAuth = new ApiAuth(Constants.API_ENDPOINT, Constants.P_NAMECARD_ID);
+
+apiAuth.createSessionIfNoLogin(Constants.EMAIL, Constants.PASSWORD);

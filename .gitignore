@@ -11,3 +11,7 @@ web-build/
 
 # macOS
 .DS_Store
+
+# privacy
+secretoryapp-googlesheet.json
+Constants.tsx
