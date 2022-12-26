@@ -1,8 +1,7 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect } from "react";
 import {
   ScrollView,
   View,
-  Text,
   ImageBackground,
   TouchableOpacity,
 } from "react-native";
@@ -11,9 +10,9 @@ import DEMO from "../assets/data/demo";
 import styles, { WHITE } from "../assets/styles";
 import { ApiPofile } from "../backend/appwrite/service/collection/profile";
 import { Constants } from "../Constants";
-import store, { RootState } from "../redux_modules";
+import store from "../redux_modules";
 import { AChangeProfile } from "../redux_modules/action";
-import { TProfileItem, TSProfileItem } from "../types";
+import { TSProfileItem } from "../types";
 
 const Profile = () => {
   let apiPofile = new ApiPofile(
@@ -72,7 +71,6 @@ const Profile = () => {
             </TouchableOpacity>
           </View>
         </ImageBackground>
-
         <ProfileItem />
       </ScrollView>
     </ImageBackground>

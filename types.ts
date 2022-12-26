@@ -63,3 +63,8 @@ export type TData = {
   info4?: string;
   location?: string;
 };
+
+export interface IScreenActivity {
+  pageY: number;
+  viewOffsetEnable: boolean;
+}
