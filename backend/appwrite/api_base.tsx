@@ -17,7 +17,7 @@ export class ApiBase {
   }
 }
 
-export function resolvePromise(promise: any) {
+export function printPromise(promise: any) {
   return promise.then(
     function (response: any) {
       console.log(response);

@@ -27,13 +27,17 @@ export class ApiCollection extends ApiDatabase {
     return this.database.listDocuments(this.databaseId, this.collectionId);
   }
 
-  updateDocument(documentId: any, data: any, read: any, write: any) {
+  updateDocument(documentId: string, data: any) {
+    console.log(
+      "collection.tsx: Updating %s to %s",
+      JSON.stringify(data),
+      documentId
+    );
     return this.database.updateDocument(
+      this.databaseId,
       this.collectionId,
       documentId,
-      data,
-      read,
-      write
+      data
     );
   }
 

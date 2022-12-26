@@ -8,32 +8,43 @@ import {
 import { Icon, ProfileItem } from "../components";
 import DEMO from "../assets/data/demo";
 import styles, { WHITE } from "../assets/styles";
-import { ApiPofile } from "../backend/appwrite/service/collection/profile";
+import { ApiProfile } from "../backend/appwrite/service/collection/profile";
 import { Constants } from "../Constants";
 import store from "../redux_modules";
-import { AChangeProfile } from "../redux_modules/action";
-import { TSProfileItem } from "../types";
+import {
+  AChangeDisplayProfile,
+  AChangeMetaProfile,
+} from "../redux_modules/action";
+import { ISProfileDisplayItem, ISProfileMetaItem } from "../types";
+import { objectFilterKey, objectMapKey } from "../backend/objectUtil";
 
 const Profile = () => {
-  let apiPofile = new ApiPofile(
+  let apiPofile = new ApiProfile(
     Constants.API_ENDPOINT,
     Constants.P_NAMECARD_ID,
     Constants.DB_NAMECARD_ID,
     Constants.C_PROFILE_ID
   );
 
-  let promise = apiPofile.queryByName("Yuqi Li");
-
   useEffect(() => {
+    let promise = apiPofile.queryByName("Yuqi Li");
     promise.then(
       function (response: any) {
-        console.log("set state", response.documents[0]);
-        const newState = Object.fromEntries(
-          Object.entries(response.documents[0]).filter(([key]) =>
-            TSProfileItem.includes(key)
-          )
+        console.log("Profile.tsx", response);
+        let newDisplayState = objectMapKey(
+          objectFilterKey(response.documents[0], ISProfileDisplayItem),
+          ISProfileDisplayItem
         );
-        store.dispatch(AChangeProfile(newState));
+        let newMetaState = objectMapKey(
+          objectFilterKey(response.documents[0], ISProfileMetaItem),
+          ISProfileMetaItem
+        );
+        console.log("set state", {
+          display: newDisplayState,
+          meta: newMetaState,
+        });
+        store.dispatch(AChangeDisplayProfile(newDisplayState));
+        store.dispatch(AChangeMetaProfile(newMetaState));
       },
       function (error: any) {
         console.error(error);

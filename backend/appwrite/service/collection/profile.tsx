@@ -1,8 +1,8 @@
 import { Query } from "appwrite";
-import { resolvePromise } from "../../api_base";
+import { printPromise } from "../../api_base";
 import { ApiCollection } from "../collection";
 
-export class ApiPofile extends ApiCollection {
+export class ApiProfile extends ApiCollection {
   constructor(
     apiEndpoint: string,
     projectId: string,
@@ -14,5 +14,23 @@ export class ApiPofile extends ApiCollection {
 
   queryByName(name: string) {
     return this.queryDocument([Query.equal("Name", name)]);
+  }
+
+  updateByName(name: string, data: any) {
+    let promise = this.queryByName(name);
+    promise.then(
+      (response: any) => {
+        if (response.documents.length !== 1) {
+          console.error("Incorrect number of documents", response);
+        } else {
+          let doc = response.documents[0];
+          const documentId = doc["$id"];
+          this.updateDocument(documentId, data);
+        }
+      },
+      (error: any) => {
+        console.error(error);
+      }
+    );
   }
 }

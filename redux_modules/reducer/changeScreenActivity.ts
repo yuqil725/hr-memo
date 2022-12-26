@@ -1,5 +1,5 @@
 import { AnyAction } from "redux";
-import { IScreenActivity, TProfileItem } from "../../types";
+import { IScreenActivity, IProfileDisplayItem } from "../../types";
 
 const RChangeScreenActivity = (
   state: IScreenActivity = { pageY: 0, viewOffsetEnable: false },

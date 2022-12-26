@@ -6,13 +6,25 @@ import {
   TextInput,
   View,
 } from "react-native";
-import { IScreenActivity, TProfileItem } from "../types";
-import { AChangeProfile, AChangeScreenActivity } from "../redux_modules/action";
+import { IScreenActivity, IProfileDisplayItem, IProfileItem } from "../types";
+import {
+  AChangeDisplayProfile,
+  AChangeScreenActivity,
+} from "../redux_modules/action";
 import store, { RootState } from "../redux_modules";
 import { useSelector } from "react-redux";
 import SProfileItem from "../assets/styles/profileItem";
+import { pascalize } from "../backend/stringUtil";
+import { ApiProfile } from "../backend/appwrite/service/collection/profile";
+import { Constants } from "../Constants";
 
-const displayItem = (key: any, value: any) => {
+const displayItem = (profileItem: IProfileItem, key: any, value: any) => {
+  let apiPofile = new ApiProfile(
+    Constants.API_ENDPOINT,
+    Constants.P_NAMECARD_ID,
+    Constants.DB_NAMECARD_ID,
+    Constants.C_PROFILE_ID
+  );
   switch (typeof value) {
     case "string": {
       return (
@@ -24,9 +36,11 @@ const displayItem = (key: any, value: any) => {
           }}
           onBlur={(e) => {
             store.dispatch(AChangeScreenActivity({ viewOffsetEnable: false }));
+            let data = { [pascalize(key)]: e.nativeEvent.text };
+            apiPofile.updateDocument(profileItem.meta.documentId, data);
           }}
           onChangeText={(newValue) => {
-            store.dispatch(AChangeProfile({ [key]: newValue }));
+            store.dispatch(AChangeDisplayProfile({ [key]: newValue }));
           }}
           style={SProfileItem.infoContent}
         />
@@ -49,11 +63,15 @@ const displayItem = (key: any, value: any) => {
                   store.dispatch(
                     AChangeScreenActivity({ viewOffsetEnable: false })
                   );
+                  let newArray = [...value];
+                  newArray[index] = e.nativeEvent.text;
+                  let data = { [pascalize(key)]: newArray };
+                  apiPofile.updateDocument(profileItem.meta.documentId, data);
                 }}
                 onChangeText={(newValue) => {
                   let newArray = [...value];
                   newArray[index] = newValue;
-                  store.dispatch(AChangeProfile({ [key]: newArray }));
+                  store.dispatch(AChangeDisplayProfile({ [key]: newArray }));
                 }}
                 style={SProfileItem.infoContent}
               />
@@ -66,9 +84,10 @@ const displayItem = (key: any, value: any) => {
 };
 
 const ProfileItem = () => {
-  let profileItem: TProfileItem = useSelector(
+  let profileItem: IProfileItem = useSelector(
     (state: RootState) => state.profile
   );
+  let profileDisplayItem: IProfileDisplayItem = profileItem.display;
   let screenActivity: IScreenActivity = useSelector(
     (state: RootState) => state.screenActivity
   );
@@ -84,9 +103,9 @@ const ProfileItem = () => {
           store.dispatch(AChangeScreenActivity({ pageY: e.nativeEvent.pageY }));
         }}
       >
-        {Object.values(profileItem).map((value: any, index) => {
+        {Object.values(profileDisplayItem).map((value: any, index) => {
           if (
-            Object.keys(profileItem).at(index)!.at(0) !== "$" &&
+            Object.keys(profileDisplayItem).at(index)!.at(0) !== "$" &&
             value &&
             value != ""
           )
@@ -94,11 +113,16 @@ const ProfileItem = () => {
               <View key={index} style={SProfileItem.infoSectionView}>
                 <View style={SProfileItem.infoSectionTitleView}>
                   <Text style={SProfileItem.infoSectionText}>
-                    {Object.keys(profileItem).at(index)}:&nbsp;
+                    {pascalize(Object.keys(profileDisplayItem).at(index))}
+                    :&nbsp;
                   </Text>
                 </View>
                 <View style={SProfileItem.infoSectionContent}>
-                  {displayItem(Object.keys(profileItem).at(index), value)}
+                  {displayItem(
+                    profileItem,
+                    Object.keys(profileDisplayItem).at(index),
+                    value
+                  )}
                 </View>
               </View>
             );

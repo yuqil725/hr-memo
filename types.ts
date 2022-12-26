@@ -22,25 +22,39 @@ export type MessageT = {
 };
 
 // Used to check the type's attributes
-export const TSProfileItem = [
-  "Name",
-  "FriendshipStage",
-  "LivingAddress",
-  "Education",
-  "Activity",
-  "Comment",
-  "Todo",
-];
-
-export type TProfileItem = {
-  Name: string;
-  FriendshipStage?: string;
-  LivingAddress?: string;
-  Education?: string[];
-  Activity?: string[];
-  Comment?: string[];
-  Todo?: string[];
+export const ISProfileDisplayItem = {
+  Name: "name",
+  FriendshipStage: "friendshipStage",
+  LivingAddress: "livingAddress",
+  Education: "education",
+  Activity: "activity",
+  Comment: "comment",
+  Todo: "todo",
 };
+
+export interface IProfileDisplayItem {
+  name: string;
+  friendshipStage?: string;
+  livingAddress?: string;
+  education?: string[];
+  activity?: string[];
+  comment?: string[];
+  todo?: string[];
+}
+
+// Used to check the type's attributes
+export const ISProfileMetaItem = {
+  $id: "documentId",
+};
+
+export interface IProfileMetaItem {
+  documentId: string;
+}
+
+export interface IProfileItem {
+  display: IProfileDisplayItem;
+  meta: IProfileMetaItem;
+}
 
 export type TTabBarIcon = {
   focused: boolean;

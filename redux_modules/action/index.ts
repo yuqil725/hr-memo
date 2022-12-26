@@ -1,6 +1,13 @@
-export const AChangeProfile = (p: any) => {
+export const AChangeMetaProfile = (p: any) => {
   return {
-    type: "CHANGE_PROFILE",
+    type: "CHANGE_META_PROFILE",
+    payload: p,
+  };
+};
+
+export const AChangeDisplayProfile = (p: any) => {
+  return {
+    type: "CHANGE_DISPLAY_PROFILE",
     payload: p,
   };
 };

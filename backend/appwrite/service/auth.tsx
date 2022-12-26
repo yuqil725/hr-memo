@@ -1,5 +1,5 @@
 import { Models } from "appwrite";
-import { ApiBase, resolvePromise } from "../api_base";
+import { ApiBase, printPromise } from "../api_base";
 
 export class ApiAuth extends ApiBase {
   constructor(apiEndpoint: string, projectId: string) {
@@ -27,7 +27,7 @@ export class ApiAuth extends ApiBase {
   }
 
   createSessionIfNoLogin(email: any, password: any) {
-    let sessions: Models.Session[] = resolvePromise(this.listSession());
+    let sessions: Models.Session[] = printPromise(this.listSession());
 
     if (!sessions) {
       this.createSession(email, password);

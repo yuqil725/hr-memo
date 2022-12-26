@@ -1,10 +1,21 @@
-import React from "react";
+import { createBottomTabNavigator } from "@react-navigation/bottom-tabs";
 import { NavigationContainer } from "@react-navigation/native";
 import { createStackNavigator } from "@react-navigation/stack";
-import { createBottomTabNavigator } from "@react-navigation/bottom-tabs";
-import { Home, Matches, Profile } from "./screens";
-import { PRIMARY_COLOR, DARK_GRAY, BLACK, WHITE } from "./assets/styles";
+import React from "react";
+import { Provider } from "react-redux";
+import { BLACK, DARK_GRAY, PRIMARY_COLOR, WHITE } from "./assets/styles";
+import { printPromise } from "./backend/appwrite/api_base";
+import { ApiAuth } from "./backend/appwrite/service/auth";
+import { ApiProfile } from "./backend/appwrite/service/collection/profile";
 import TabBarIcon from "./components/TabBarIcon";
+import { Constants } from "./Constants";
+import store from "./redux_modules";
+import { Home, Matches, Profile } from "./screens";
+import { IProfileDisplayItem } from "./types";
+
+let apiAuth = new ApiAuth(Constants.API_ENDPOINT, Constants.P_NAMECARD_ID);
+
+apiAuth.createSessionIfNoLogin(Constants.EMAIL, Constants.PASSWORD);
 
 const Stack = createStackNavigator();
 const Tab = createBottomTabNavigator();
@@ -105,12 +116,3 @@ const App = () => (
 export default App;
 
 // playground
-
-import { Constants } from "./Constants";
-import { ApiAuth } from "./backend/appwrite/service/auth";
-import { Provider } from "react-redux";
-import store from "./redux_modules";
-
-let apiAuth = new ApiAuth(Constants.API_ENDPOINT, Constants.P_NAMECARD_ID);
-
-apiAuth.createSessionIfNoLogin(Constants.EMAIL, Constants.PASSWORD);
