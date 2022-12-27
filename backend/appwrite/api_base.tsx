@@ -1,11 +1,10 @@
-import { Databases, Account, Client, Models } from "appwrite";
+import { Account, Client } from "appwrite";
 
 export class ApiBase {
   apiEndpoint: string;
   projectId: string;
   client: any;
   account: any;
-  database: any;
 
   constructor(apiEndpoint: string, projectId: string) {
     this.apiEndpoint = apiEndpoint;
@@ -13,7 +12,6 @@ export class ApiBase {
     this.client = new Client();
     this.client.setEndpoint(this.apiEndpoint).setProject(this.projectId);
     this.account = new Account(this.client);
-    this.database = new Databases(this.client);
   }
 }
 

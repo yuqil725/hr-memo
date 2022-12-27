@@ -1,8 +1,8 @@
 import { Query } from "appwrite";
-import { printPromise } from "../../api_base";
-import { ApiCollection } from "../collection";
+import { printPromise } from "../../../api_base";
+import { ApiCollection } from "./collection";
 
-export class ApiProfile extends ApiCollection {
+export class ApiProfileCollection extends ApiCollection {
   constructor(
     apiEndpoint: string,
     projectId: string,

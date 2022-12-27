@@ -30,6 +30,7 @@ export const ISProfileDisplayItem = {
   Activity: "activity",
   Comment: "comment",
   Todo: "todo",
+  Image: "image",
 };
 
 export interface IProfileDisplayItem {
@@ -40,6 +41,7 @@ export interface IProfileDisplayItem {
   activity?: string[];
   comment?: string[];
   todo?: string[];
+  image?: any;
 }
 
 // Used to check the type's attributes

@@ -1,5 +1,5 @@
 import { Models } from "appwrite";
-import { ApiBase, printPromise } from "../api_base";
+import { ApiBase, printPromise } from "../../api_base";
 
 export class ApiAuth extends ApiBase {
   constructor(apiEndpoint: string, projectId: string) {

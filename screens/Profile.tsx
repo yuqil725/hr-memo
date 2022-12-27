@@ -9,26 +9,38 @@ import {
 import { Icon, ProfileItem } from "../components";
 import DEMO from "../assets/data/demo";
 import styles, { WHITE } from "../assets/styles";
-import { ApiProfile } from "../backend/appwrite/service/collection/profile";
+import { ApiProfileCollection } from "../backend/appwrite/service/database/collection/profile";
 import { Constants } from "../Constants";
-import store from "../redux_modules";
+import store, { RootState } from "../redux_modules";
 import {
   AChangeDisplayProfile,
   AChangeMetaProfile,
 } from "../redux_modules/action";
-import { ISProfileDisplayItem, ISProfileMetaItem } from "../types";
+import {
+  IProfileItem,
+  ISProfileDisplayItem,
+  ISProfileMetaItem,
+} from "../types";
 import { objectFilterKey, objectMapKey } from "../backend/objectUtil";
+import { ApiProfileBucket } from "../backend/appwrite/service/storage/bucket/profile";
+import { useSelector } from "react-redux";
 
 const Profile = () => {
-  let apiPofile = new ApiProfile(
+  let apiPofileCollection = new ApiProfileCollection(
     Constants.API_ENDPOINT,
     Constants.P_NAMECARD_ID,
     Constants.DB_NAMECARD_ID,
     Constants.C_PROFILE_ID
   );
 
+  let apiProfileBucket = new ApiProfileBucket(
+    Constants.API_ENDPOINT,
+    Constants.P_NAMECARD_ID,
+    Constants.BKT_NAMECARD_ID
+  );
+
   useEffect(() => {
-    let promise = apiPofile.queryByName("Yuqi Li");
+    let promise = apiPofileCollection.queryByName("Yuqi Li");
     promise.then(
       function (response: any) {
         console.log("Profile.tsx", response);
@@ -53,8 +65,9 @@ const Profile = () => {
     );
   }, []);
 
-  const { age, image, info1, info2, info3, info4, location, match, name } =
-    DEMO[7];
+  let profileItem: IProfileItem = useSelector(
+    (state: RootState) => state.profile
+  );
 
   return (
     <KeyboardAvoidingView
@@ -65,11 +78,16 @@ const Profile = () => {
       }}
     >
       <ImageBackground
-        source={require("../assets/images/bg.png")}
+        source={{
+          uri: apiProfileBucket.getFilePreview("daniel_acosta_1").toString(),
+        }}
         style={styles.bg}
       >
         <ScrollView style={styles.containerProfile}>
-          <ImageBackground source={image} style={styles.photo}>
+          <ImageBackground
+            source={profileItem.display.image}
+            style={styles.photo}
+          >
             <View style={styles.top}>
               <TouchableOpacity>
                 <Icon

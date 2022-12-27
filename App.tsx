@@ -4,7 +4,7 @@ import { createStackNavigator } from "@react-navigation/stack";
 import React from "react";
 import { Provider } from "react-redux";
 import { BLACK, DARK_GRAY, PRIMARY_COLOR, WHITE } from "./assets/styles";
-import { ApiAuth } from "./backend/appwrite/service/auth";
+import { ApiAuth } from "./backend/appwrite/service/database/auth";
 import TabBarIcon from "./components/TabBarIcon";
 import { Constants } from "./Constants";
 import store from "./redux_modules";

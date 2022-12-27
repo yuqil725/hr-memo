@@ -9,11 +9,11 @@ import store, { RootState } from "../redux_modules";
 import { useSelector } from "react-redux";
 import SProfileItem from "../assets/styles/profileItem";
 import { pascalize } from "../backend/stringUtil";
-import { ApiProfile } from "../backend/appwrite/service/collection/profile";
+import { ApiProfileCollection } from "../backend/appwrite/service/database/collection/profile";
 import { Constants } from "../Constants";
 
 const displayItem = (profileItem: IProfileItem, key: any, value: any) => {
-  let apiPofile = new ApiProfile(
+  let apiPofile = new ApiProfileCollection(
     Constants.API_ENDPOINT,
     Constants.P_NAMECARD_ID,
     Constants.DB_NAMECARD_ID,
@@ -41,7 +41,7 @@ const displayItem = (profileItem: IProfileItem, key: any, value: any) => {
       );
     }
     case "object": {
-      if (value) {
+      if (value && key !== "image") {
         return value.map((v: any, index: any) => {
           return (
             <View key={index} style={SProfileItem.infoList}>

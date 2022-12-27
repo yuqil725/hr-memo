@@ -1,4 +1,4 @@
-import { ApiDatabase } from "./database";
+import { ApiDatabase } from "../database";
 
 export class ApiCollection extends ApiDatabase {
   collectionId: string;
