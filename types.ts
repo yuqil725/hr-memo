@@ -79,6 +79,5 @@ export type TData = {
 };
 
 export interface IScreenActivity {
-  pageY: number;
   viewOffsetEnable: boolean;
 }

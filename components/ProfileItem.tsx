@@ -1,11 +1,5 @@
 import React from "react";
-import {
-  Keyboard,
-  KeyboardAvoidingView,
-  Text,
-  TextInput,
-  View,
-} from "react-native";
+import { Text, TextInput, View } from "react-native";
 import { IScreenActivity, IProfileDisplayItem, IProfileItem } from "../types";
 import {
   AChangeDisplayProfile,
@@ -93,42 +87,32 @@ const ProfileItem = () => {
   );
 
   return (
-    <KeyboardAvoidingView
-      behavior="position"
-      enabled={screenActivity.pageY > 500 && screenActivity.viewOffsetEnable}
-    >
-      <View
-        style={SProfileItem.containerProfileItem}
-        onTouchStart={(e) => {
-          store.dispatch(AChangeScreenActivity({ pageY: e.nativeEvent.pageY }));
-        }}
-      >
-        {Object.values(profileDisplayItem).map((value: any, index) => {
-          if (
-            Object.keys(profileDisplayItem).at(index)!.at(0) !== "$" &&
-            value &&
-            value != ""
-          )
-            return (
-              <View key={index} style={SProfileItem.infoSectionView}>
-                <View style={SProfileItem.infoSectionTitleView}>
-                  <Text style={SProfileItem.infoSectionText}>
-                    {pascalize(Object.keys(profileDisplayItem).at(index))}
-                    :&nbsp;
-                  </Text>
-                </View>
-                <View style={SProfileItem.infoSectionContent}>
-                  {displayItem(
-                    profileItem,
-                    Object.keys(profileDisplayItem).at(index),
-                    value
-                  )}
-                </View>
+    <View style={SProfileItem.containerProfileItem}>
+      {Object.values(profileDisplayItem).map((value: any, index) => {
+        if (
+          Object.keys(profileDisplayItem).at(index)!.at(0) !== "$" &&
+          value &&
+          value != ""
+        )
+          return (
+            <View key={index} style={SProfileItem.infoSectionView}>
+              <View style={SProfileItem.infoSectionTitleView}>
+                <Text style={SProfileItem.infoSectionText}>
+                  {pascalize(Object.keys(profileDisplayItem).at(index))}
+                  :&nbsp;
+                </Text>
               </View>
-            );
-        })}
-      </View>
-    </KeyboardAvoidingView>
+              <View style={SProfileItem.infoSectionContent}>
+                {displayItem(
+                  profileItem,
+                  Object.keys(profileDisplayItem).at(index),
+                  value
+                )}
+              </View>
+            </View>
+          );
+      })}
+    </View>
   );
 };
 

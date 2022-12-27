@@ -4,6 +4,7 @@ import {
   View,
   ImageBackground,
   TouchableOpacity,
+  KeyboardAvoidingView,
 } from "react-native";
 import { Icon, ProfileItem } from "../components";
 import DEMO from "../assets/data/demo";
@@ -56,35 +57,43 @@ const Profile = () => {
     DEMO[7];
 
   return (
-    <ImageBackground
-      source={require("../assets/images/bg.png")}
-      style={styles.bg}
+    <KeyboardAvoidingView
+      behavior="position"
+      style={{
+        height: "100%",
+        alignItems: "center",
+      }}
     >
-      <ScrollView style={styles.containerProfile}>
-        <ImageBackground source={image} style={styles.photo}>
-          <View style={styles.top}>
-            <TouchableOpacity>
-              <Icon
-                name="chevron-back"
-                size={20}
-                color={WHITE}
-                style={styles.topIconLeft}
-              />
-            </TouchableOpacity>
+      <ImageBackground
+        source={require("../assets/images/bg.png")}
+        style={styles.bg}
+      >
+        <ScrollView style={styles.containerProfile}>
+          <ImageBackground source={image} style={styles.photo}>
+            <View style={styles.top}>
+              <TouchableOpacity>
+                <Icon
+                  name="chevron-back"
+                  size={20}
+                  color={WHITE}
+                  style={styles.topIconLeft}
+                />
+              </TouchableOpacity>
 
-            <TouchableOpacity>
-              <Icon
-                name="ellipsis-vertical"
-                size={20}
-                color={WHITE}
-                style={styles.topIconRight}
-              />
-            </TouchableOpacity>
-          </View>
-        </ImageBackground>
-        <ProfileItem />
-      </ScrollView>
-    </ImageBackground>
+              <TouchableOpacity>
+                <Icon
+                  name="ellipsis-vertical"
+                  size={20}
+                  color={WHITE}
+                  style={styles.topIconRight}
+                />
+              </TouchableOpacity>
+            </View>
+          </ImageBackground>
+          <ProfileItem />
+        </ScrollView>
+      </ImageBackground>
+    </KeyboardAvoidingView>
   );
 };
 
