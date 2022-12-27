@@ -27,10 +27,16 @@ export class ApiAuth extends ApiBase {
   }
 
   createSessionIfNoLogin(email: any, password: any) {
-    let sessions: Models.Session[] = printPromise(this.listSession());
-
-    if (!sessions) {
-      this.createSession(email, password);
-    }
+    let apiAuth: any = this;
+    let promise: any = this.listSession();
+    promise.then(
+      function (response: any) {
+        console.log("Found existing sessions:", response);
+      },
+      function (error: any) {
+        console.log("Didn't find session", error);
+        apiAuth.createSession(email, password);
+      }
+    );
   }
 }
