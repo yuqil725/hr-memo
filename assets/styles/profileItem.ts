@@ -53,6 +53,7 @@ let SProfileItem = StyleSheet.create({
   infoSectionView: {
     paddingTop: 8,
     justifyContent: "center",
+    zIndex: -1,
   },
   infoSectionTitleView: {
     justifyContent: "flex-end",

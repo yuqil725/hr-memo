@@ -7,7 +7,6 @@ import {
   KeyboardAvoidingView,
 } from "react-native";
 import { Icon, ProfileItem } from "../components";
-import DEMO from "../assets/data/demo";
 import styles, { WHITE } from "../assets/styles";
 import { ApiProfileCollection } from "../backend/appwrite/service/database/collection/profile";
 import { Constants } from "../Constants";
@@ -40,7 +39,7 @@ const Profile = () => {
   );
 
   useEffect(() => {
-    let promise = apiPofileCollection.queryByName("Yuqi Li");
+    let promise = apiPofileCollection.queryByName("Daniel Acosta");
     promise.then(
       function (response: any) {
         console.log("Profile.tsx", response);

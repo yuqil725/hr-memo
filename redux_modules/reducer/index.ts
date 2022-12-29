@@ -1,9 +1,9 @@
 import RChangeProfile from "./changeProfile";
-import RChangeScreenActivity from "./changeScreenActivity";
+import RChangeProfileScreenActivity from "./changeScreenActivity";
 
 const Reducer = {
   profile: RChangeProfile,
-  screenActivity: RChangeScreenActivity,
+  profileScreenActivity: RChangeProfileScreenActivity,
 };
 
 export default Reducer;

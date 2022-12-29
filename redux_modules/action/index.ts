@@ -12,9 +12,9 @@ export const AChangeDisplayProfile = (p: any) => {
   };
 };
 
-export const AChangeScreenActivity = (p: any) => {
+export const AChangeProfileScreenActivity = (p: any) => {
   return {
-    type: "CHANGE_SCREEN_ACTIVITY",
+    type: "CHANGE_PROFILE_SCREEN_ACTIVITY",
     payload: p,
   };
 };

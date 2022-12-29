@@ -35,8 +35,8 @@ export const ISProfileDisplayItem = {
 
 export interface IProfileDisplayItem {
   name: string;
-  friendshipStage?: string;
-  livingAddress?: string;
+  livingAddress?: string[];
+  friendshipStage?: string[];
   education?: string[];
   activity?: string[];
   comment?: string[];
@@ -64,22 +64,6 @@ export type TTabBarIcon = {
   text: string;
 };
 
-export type TData = {
-  id: number;
-  name: string;
-  isOnline: boolean;
-  match: string;
-  description: string;
-  message: string;
-  image: any;
-  age?: string;
-  info1?: string;
-  info2?: string;
-  info3?: string;
-  info4?: string;
-  location?: string;
-};
-
-export interface IScreenActivity {
-  viewOffsetEnable: boolean;
+export interface IProfileScreenActivity {
+  friendshipDropdownOpen: boolean;
 }
