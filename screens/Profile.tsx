@@ -19,13 +19,13 @@ import {
   IProfileItem,
   ISProfileDisplayItem,
   ISProfileMetaItem,
-} from "../types";
+} from "../interfaces/profile";
 import { objectFilterKey, objectMapKey } from "../backend/objectUtil";
 import { ApiProfileBucket } from "../backend/appwrite/service/storage/bucket/profile";
 import { useSelector } from "react-redux";
 
 const Profile = () => {
-  let apiPofileCollection = new ApiProfileCollection(
+  let apiProfileCollection = new ApiProfileCollection(
     Constants.API_ENDPOINT,
     Constants.P_NAMECARD_ID,
     Constants.DB_NAMECARD_ID,
@@ -39,7 +39,7 @@ const Profile = () => {
   );
 
   useEffect(() => {
-    let promise = apiPofileCollection.queryByName("Daniel Acosta");
+    let promise = apiProfileCollection.queryByName("Daniel Acosta");
     promise.then(
       function (response: any) {
         console.log("Profile.tsx", response);

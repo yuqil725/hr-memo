@@ -1,5 +1,5 @@
 import { AnyAction } from "redux";
-import { IProfileScreenActivity } from "../../types";
+import { IProfileScreenActivity } from "../../interfaces/profile";
 
 const RChangeProfileScreenActivity = (
   state: IProfileScreenActivity = { friendshipDropdownOpen: false },

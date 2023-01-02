@@ -1,5 +1,5 @@
 import { AnyAction } from "redux";
-import { IProfileDisplayItem, IProfileItem } from "../../types";
+import { IProfileItem } from "../../interfaces/profile";
 
 const RChangeProfile = (
   state: IProfileItem = { display: { name: "" }, meta: { documentId: "" } },

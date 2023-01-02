@@ -1,7 +1,7 @@
 import React from "react";
 import { Text, View, Image, Dimensions, TouchableOpacity } from "react-native";
 import Icon from "./Icon";
-import { TCardItem } from "../types";
+import { TCardItem } from "../interfaces/general";
 import styles, {
   DISLIKE_ACTIONS,
   FLASH_ACTIONS,

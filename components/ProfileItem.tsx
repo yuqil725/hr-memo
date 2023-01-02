@@ -5,7 +5,7 @@ import {
   IProfileItem,
   IProfileScreenActivity,
   ISProfileDisplayItem,
-} from "../types";
+} from "../interfaces/profile";
 import {
   AChangeDisplayProfile,
   AChangeProfileScreenActivity,
