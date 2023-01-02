@@ -152,7 +152,7 @@ const displayItem = (
                     placeholder={
                       "Swipe-> to Add, Swipe<- to Delete, Click to edit"
                     }
-                    placeholderTextColor="grey"
+                    placeholderTextColor="#E6E6E6"
                     onBlur={(e) => {
                       let newArray = [...value];
                       newArray[index] = e.nativeEvent.text;
