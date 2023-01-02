@@ -23,6 +23,7 @@ import {
 import { objectFilterKey, objectMapKey } from "../backend/objectUtil";
 import { ApiProfileBucket } from "../backend/appwrite/service/storage/bucket/profile";
 import { useSelector } from "react-redux";
+import { ISearchCardScreen } from "../interfaces/search";
 
 const Profile = () => {
   let apiProfileCollection = new ApiProfileCollection(
@@ -38,8 +39,14 @@ const Profile = () => {
     Constants.BKT_NAMECARD_ID
   );
 
+  let searchCardScreen: ISearchCardScreen = useSelector(
+    (state: RootState) => state.searchCardScreen
+  );
+
   useEffect(() => {
-    let promise = apiProfileCollection.queryByName("Daniel Acosta");
+    let promise = apiProfileCollection.queryByName(
+      searchCardScreen.selectedName
+    );
     promise.then(
       function (response: any) {
         console.log("Profile.tsx", response);
@@ -51,7 +58,7 @@ const Profile = () => {
           objectFilterKey(response.documents[0], ISProfileMetaItem),
           ISProfileMetaItem
         );
-        console.log("set state", {
+        console.log("set profile state", {
           display: newDisplayState,
           meta: newMetaState,
         });

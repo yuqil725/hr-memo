@@ -7,7 +7,7 @@ import Swipeable from "react-native-gesture-handler/Swipeable";
 import { SSwipeableItem } from "../assets/styles/swipeableItem";
 import { MaterialCommunityIcons } from "@expo/vector-icons";
 import { Entypo } from "@expo/vector-icons";
-import { ISwipeableItem } from "../types";
+import { ISwipeableItem } from "../interfaces/profile";
 import { vibrate } from "./Vibrate";
 
 export default class SwipeableItem extends Component<
