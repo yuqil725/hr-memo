@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React from "react";
 import { Text, TextInput, View } from "react-native";
 import {
   IProfileDisplayItem,
@@ -18,6 +18,7 @@ import { ApiProfileCollection } from "../backend/appwrite/service/database/colle
 import DropDownPicker from "react-native-dropdown-picker";
 import { Constants } from "../Constants";
 import { friendshipStage } from "../backend/constants";
+import SwipeableItem from "./SwipeableItem";
 
 const displayItem = (
   profileItem: IProfileItem,
@@ -31,21 +32,41 @@ const displayItem = (
     Constants.DB_NAMECARD_ID,
     Constants.C_PROFILE_ID
   );
+  function onSwipeableCloseCallbackOnArray(
+    direction: "left" | "right",
+    onSwipeableCloseCallbackProps: any
+  ) {
+    // only applicable to Array
+    if (direction == "left") {
+      console.log(`Adding new empty item`);
+      let data: string[] = [
+        ...profileItem.display[
+          onSwipeableCloseCallbackProps.key as keyof IProfileDisplayItem
+        ],
+      ];
+      data.splice(onSwipeableCloseCallbackProps.index + 1, 0, "");
+      let newValue = { [pascalize(key)]: data };
+      apiPofile.updateDocument(profileItem.meta.documentId, newValue);
+      store.dispatch(AChangeDisplayProfile({ [key]: data }));
+    } else if (direction == "right") {
+      let data: string[] = [
+        ...profileItem.display[
+          onSwipeableCloseCallbackProps.key as keyof IProfileDisplayItem
+        ],
+      ];
+      const dataDeleted = data.splice(onSwipeableCloseCallbackProps.index, 1);
+      console.log(`Deleting item ${dataDeleted}`);
+      let newValue = { [pascalize(key)]: data };
+      apiPofile.updateDocument(profileItem.meta.documentId, newValue);
+      store.dispatch(AChangeDisplayProfile({ [key]: data }));
+    }
+  }
   switch (typeof value) {
     case "string": {
       return (
         <TextInput
-          key={key}
           value={value}
-          onFocus={(e) => {
-            store.dispatch(
-              AChangeProfileScreenActivity({ viewOffsetEnable: true })
-            );
-          }}
           onBlur={(e) => {
-            store.dispatch(
-              AChangeProfileScreenActivity({ viewOffsetEnable: false })
-            );
             let data = { [pascalize(key)]: e.nativeEvent.text };
             apiPofile.updateDocument(profileItem.meta.documentId, data);
           }}
@@ -94,7 +115,6 @@ const displayItem = (
                 return callback(profileItem.display.friendshipStage);
               }}
               onSelectItem={(newItem) => {
-                console.log(key, newItem);
                 let newArray = newItem.map(function (e, i) {
                   return e.value;
                 });
@@ -114,13 +134,25 @@ const displayItem = (
           return;
         }
         default: {
-          if (value) {
-            return value.map((v: any, index: any) => {
-              return (
-                <View key={index} style={SProfileItem.infoList}>
+          // default is string[]
+          if (!value || value.length === 0) {
+            value = [""];
+          }
+          return value.map((v: any, index: any) => {
+            return (
+              <SwipeableItem
+                key={index}
+                onSwipeableCloseCallbackProps={{ key: key, index: index }}
+                onSwipeableCloseCallback={onSwipeableCloseCallbackOnArray}
+              >
+                <View style={SProfileItem.infoList}>
                   <TextInput
                     multiline
                     value={v}
+                    placeholder={
+                      "Swipe-> to Add, Swipe<- to Delete, Click to edit"
+                    }
+                    placeholderTextColor="grey"
                     onBlur={(e) => {
                       let newArray = [...value];
                       newArray[index] = e.nativeEvent.text;
@@ -140,9 +172,9 @@ const displayItem = (
                     style={SProfileItem.infoContent}
                   />
                 </View>
-              );
-            });
-          }
+              </SwipeableItem>
+            );
+          });
         }
       }
     }
@@ -161,7 +193,7 @@ const ProfileItem = () => {
   return (
     <View style={SProfileItem.containerProfileItem}>
       {Object.values(profileDisplayItem).map((value: any, index) => {
-        if (Object.keys(profileDisplayItem).at(index)!.at(0) !== "$" && value)
+        if (Object.keys(profileDisplayItem).at(index)!.at(0) !== "$")
           return (
             // zIndex should be high if the display item is dropdown
             // #TODO: make it more generic instead of hardcoded
@@ -182,6 +214,7 @@ const ProfileItem = () => {
                   :&nbsp;
                 </Text>
               </View>
+
               <View style={SProfileItem.infoSectionContent}>
                 {displayItem(
                   profileItem,

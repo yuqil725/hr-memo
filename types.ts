@@ -67,3 +67,11 @@ export type TTabBarIcon = {
 export interface IProfileScreenActivity {
   friendshipDropdownOpen: boolean;
 }
+
+export interface ISwipeableItem {
+  onSwipeableCloseCallback?(
+    direction: any,
+    onSwipeableCloseCallbackProps: any
+  ): void;
+  onSwipeableCloseCallbackProps?: any;
+}
