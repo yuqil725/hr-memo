@@ -9,7 +9,7 @@ import { ApiAuth } from "./backend/appwrite/service/database/auth";
 import TabBarIcon from "./components/TabBarIcon";
 import { Constants } from "./Constants";
 import store from "./redux_modules";
-import { Home, Matches, Profile } from "./screens";
+import { Profile, Search } from "./screens";
 
 let apiAuth = new ApiAuth(Constants.API_ENDPOINT, Constants.P_NAMECARD_ID);
 
@@ -49,7 +49,7 @@ const App = () => (
                   },
                 }}
               >
-                <Tab.Screen
+                {/* <Tab.Screen
                   name="Explore"
                   component={Home}
                   options={{
@@ -61,17 +61,17 @@ const App = () => (
                       />
                     ),
                   }}
-                />
+                /> */}
 
                 <Tab.Screen
-                  name="Matches"
-                  component={Matches}
+                  name="Search"
+                  component={Search}
                   options={{
                     tabBarIcon: ({ focused }) => (
                       <TabBarIcon
                         focused={focused}
-                        iconName="heart"
-                        text="Matches"
+                        iconName="search"
+                        text="Search"
                       />
                     ),
                   }}
