@@ -5,20 +5,19 @@ import { ApiProfileBucket } from "../backend/appwrite/service/storage/bucket/pro
 import { snakeCase } from "../backend/stringUtil";
 import { Constants } from "../Constants";
 import { ISearchCard } from "../interfaces/search";
+import { Ionicons } from "@expo/vector-icons";
+import { GRAY } from "../assets/styles";
 
-const CardItem = ({ name }: ISearchCard) => {
+const CardItem = (props: ISearchCard) => {
   // Custom styling
   const fullWidth = Dimensions.get("window").width;
 
-  const imageStyle = [
-    {
-      borderRadius: 8,
-      width: fullWidth / 2 - 30,
-      height: 170,
-      margin: 0,
-    },
-  ];
-
+  const imageStyle = {
+    borderRadius: 8,
+    width: fullWidth / 2 - 30,
+    height: 170,
+    margin: 0,
+  };
   const nameStyle = [
     {
       paddingTop: 10,
@@ -35,18 +34,49 @@ const CardItem = ({ name }: ISearchCard) => {
   );
 
   // #TODO: need to change once supporting multiple images
-  let imageName = snakeCase(name + " 1");
+  let imageName = snakeCase(props.name + " 1");
 
   return (
     <View style={SCardItem.containerCardItem}>
       {/* IMAGE */}
-      <Image
-        source={{ uri: apiProfileBucket.getFilePreview(imageName).toString() }}
-        style={imageStyle}
-      />
+      {props.imagePath && props.imagePath.length > 0 ? (
+        <Image
+          source={{
+            uri: apiProfileBucket.getFilePreview(imageName).toString(),
+          }}
+          style={imageStyle}
+        />
+      ) : undefined}
+
+      {props.imagePath && props.imagePath.length === 0 ? (
+        <View
+          style={{
+            ...imageStyle,
+            justifyContent: "center",
+            alignItems: "center",
+          }}
+        ></View>
+      ) : undefined}
+
+      {!props.imagePath ? (
+        <View
+          style={{
+            ...imageStyle,
+            justifyContent: "center",
+            alignItems: "center",
+          }}
+        >
+          <Ionicons
+            name="ios-person-add"
+            size={120}
+            color={GRAY}
+            style={{ width: 120 }}
+          />
+        </View>
+      ) : undefined}
 
       {/* NAME */}
-      <Text style={nameStyle}>{name}</Text>
+      <Text style={nameStyle}>{props.name}</Text>
     </View>
   );
 };

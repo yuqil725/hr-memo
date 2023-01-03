@@ -35,12 +35,10 @@ const Search = ({ navigation }: { navigation: any }) => {
         console.log("Search.tsx", response);
         let newSearchState = {
           searchCard: response.documents.map((e: ISearchCard) => {
-            return objectMapKey(
-              objectFilterKey(response.documents[0], ISSearchCard),
-              ISSearchCard
-            );
+            return objectMapKey(objectFilterKey(e, ISSearchCard), ISSearchCard);
           }),
         };
+        newSearchState.searchCard.push({ name: " ", documentId: " " });
         console.log("set search state", newSearchState);
         store.dispatch(AChangeSearchCardScreen(newSearchState));
       },
@@ -76,13 +74,13 @@ const Search = ({ navigation }: { navigation: any }) => {
               onPress={() => {
                 store.dispatch(
                   AChangeSearchCardScreen({
-                    selectedName: item.name,
+                    selectedDocumentId: item.documentId,
                   })
                 );
                 navigation.navigate("Profile");
               }}
             >
-              <CardItem name={item.name} />
+              <CardItem {...item} />
             </TouchableOpacity>
           )}
         />
