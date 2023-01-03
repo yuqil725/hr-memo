@@ -24,6 +24,8 @@ import { objectFilterKey, objectMapKey } from "../backend/objectUtil";
 import { ApiProfileBucket } from "../backend/appwrite/service/storage/bucket/profile";
 import { useSelector } from "react-redux";
 import { ISearchCardScreen } from "../interfaces/search";
+import { UnknownName } from "../backend/constants";
+import { snakeCase } from "../backend/stringUtil";
 
 const Profile = () => {
   let apiProfileCollection = new ApiProfileCollection(
@@ -44,36 +46,49 @@ const Profile = () => {
   );
 
   useEffect(() => {
-    let promise = apiProfileCollection.queryByName(
-      searchCardScreen.selectedName
-    );
-    promise.then(
-      function (response: any) {
-        console.log("Profile.tsx", response);
-        let newDisplayState = objectMapKey(
-          objectFilterKey(response.documents[0], ISProfileDisplayItem),
-          ISProfileDisplayItem
-        );
-        let newMetaState = objectMapKey(
-          objectFilterKey(response.documents[0], ISProfileMetaItem),
-          ISProfileMetaItem
-        );
-        console.log("set profile state", {
-          display: newDisplayState,
-          meta: newMetaState,
-        });
-        store.dispatch(AChangeDisplayProfile(newDisplayState));
-        store.dispatch(AChangeMetaProfile(newMetaState));
-      },
-      function (error: any) {
-        console.error(error);
-      }
-    );
-  }, []);
+    if (
+      searchCardScreen.selectedDocumentId &&
+      searchCardScreen.selectedDocumentId !== ""
+    ) {
+      let promise = apiProfileCollection.queryByDocumentId(
+        searchCardScreen.selectedDocumentId
+      );
+      promise.then(
+        function (response: any) {
+          console.log("Profile.tsx", response);
+          let newDisplayState = objectMapKey(
+            objectFilterKey(response.documents[0], ISProfileDisplayItem),
+            ISProfileDisplayItem
+          );
+          let newMetaState = objectMapKey(
+            objectFilterKey(response.documents[0], ISProfileMetaItem),
+            ISProfileMetaItem
+          );
+          console.log("set profile state", {
+            display: newDisplayState,
+            meta: newMetaState,
+          });
+          store.dispatch(AChangeDisplayProfile(newDisplayState));
+          store.dispatch(AChangeMetaProfile(newMetaState));
+        },
+        function (error: any) {
+          console.error(error);
+        }
+      );
+    } else {
+      // Create a new profile
+      console.log("Creating a new profile");
+      apiProfileCollection.createDocument({
+        Name: UnknownName,
+      });
+    }
+  }, [searchCardScreen.selectedDocumentId]);
 
   let profileItem: IProfileItem = useSelector(
     (state: RootState) => state.profile
   );
+
+  let imageName = snakeCase(profileItem.display.name + " 1");
 
   return (
     <KeyboardAvoidingView
@@ -84,9 +99,13 @@ const Profile = () => {
       }}
     >
       <ImageBackground
-        source={{
-          uri: apiProfileBucket.getFilePreview("daniel_acosta_1").toString(),
-        }}
+        source={
+          profileItem.display.image
+            ? {
+                uri: apiProfileBucket.getFilePreview(imageName).toString(),
+              }
+            : {}
+        }
         style={styles.bg}
       >
         <ScrollView style={styles.containerProfile}>

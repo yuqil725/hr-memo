@@ -1,5 +1,3 @@
-import { Query } from "appwrite";
-import { printPromise } from "../../../api_base";
 import { ApiCollection } from "./collection";
 
 export class ApiProfileCollection extends ApiCollection {
@@ -12,12 +10,8 @@ export class ApiProfileCollection extends ApiCollection {
     super(apiEndpoint, projectId, databaseId, collectionId);
   }
 
-  queryByName(name: string) {
-    return this.queryDocument([Query.equal("Name", name)]);
-  }
-
-  updateByName(name: string, data: any) {
-    let promise = this.queryByName(name);
+  updateByDocumentId(documentId: string, data: any) {
+    let promise = this.queryByDocumentId(documentId);
     promise.then(
       (response: any) => {
         if (response.documents.length !== 1) {

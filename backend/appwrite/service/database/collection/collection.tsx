@@ -1,3 +1,4 @@
+import { ID, Query } from "appwrite";
 import { ApiDatabase } from "../database";
 
 export class ApiCollection extends ApiDatabase {
@@ -13,13 +14,12 @@ export class ApiCollection extends ApiDatabase {
     this.collectionId = collectionId;
   }
 
-  createDocument(data: any, read: any, write: any) {
+  createDocument(data: any) {
     return this.database.createDocument(
       this.databaseId,
       this.collectionId,
-      data,
-      read,
-      write
+      ID.unique(),
+      data
     );
   }
 
@@ -51,5 +51,9 @@ export class ApiCollection extends ApiDatabase {
       this.collectionId,
       queryList
     );
+  }
+
+  queryByDocumentId(documentId: string) {
+    return this.queryDocument([Query.equal("$id", documentId)]);
   }
 }
