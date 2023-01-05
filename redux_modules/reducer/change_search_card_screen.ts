@@ -5,6 +5,7 @@ const RChangeSearchCardScreen = (
   state: ISearchCardScreen = {
     selectedDocumentId: "",
     searchCard: [{ name: "", documentId: "", imagePath: undefined }],
+    longPress: false,
   },
   action: AnyAction
 ) => {

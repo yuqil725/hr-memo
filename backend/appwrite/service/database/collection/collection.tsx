@@ -42,7 +42,11 @@ export class ApiCollection extends ApiDatabase {
   }
 
   deleteDocument(documentId: any) {
-    return this.database.deleteDocument(this.collectionId, documentId);
+    return this.database.deleteDocument(
+      this.databaseId,
+      this.collectionId,
+      documentId
+    );
   }
 
   queryDocument(queryList: any) {

@@ -14,4 +14,5 @@ export interface ISearchCard {
 export interface ISearchCardScreen {
   selectedDocumentId: string;
   searchCard: ISearchCard[];
+  longPress: boolean;
 }

@@ -5,9 +5,12 @@ import {
   TouchableOpacity,
   ImageBackground,
   FlatList,
+  Modal,
+  Alert,
+  Pressable,
 } from "react-native";
 import { CardItem, Icon } from "../components";
-import styles, { DARK_GRAY } from "../assets/styles";
+import styles, { DARK_GRAY, WHITE } from "../assets/styles";
 import { ApiProfileCollection } from "../backend/appwrite/service/database/collection/profile";
 import { Constants } from "../Constants";
 import { objectFilterKey, objectMapKey } from "../backend/objectUtil";
@@ -19,6 +22,7 @@ import {
 import store, { RootState } from "../redux_modules";
 import { AChangeSearchCardScreen } from "../redux_modules/action";
 import { useSelector } from "react-redux";
+import { SSearch } from "../assets/styles/search";
 
 const Search = ({ navigation }: { navigation: any }) => {
   let apiProfileCollection = new ApiProfileCollection(
@@ -28,7 +32,16 @@ const Search = ({ navigation }: { navigation: any }) => {
     Constants.C_PROFILE_ID
   );
 
+  let searchCardScreen: ISearchCardScreen = useSelector(
+    (state: RootState) => state.searchCardScreen
+  );
+
   useEffect(() => {
+    store.dispatch(
+      AChangeSearchCardScreen({
+        selectedDocumentId: "",
+      })
+    );
     let promise = apiProfileCollection.listDocument();
     promise.then(
       function (response: any) {
@@ -47,10 +60,6 @@ const Search = ({ navigation }: { navigation: any }) => {
       }
     );
   }, []);
-
-  let searchCardScreen: ISearchCardScreen = useSelector(
-    (state: RootState) => state.searchCardScreen
-  );
 
   return (
     <ImageBackground
@@ -77,10 +86,87 @@ const Search = ({ navigation }: { navigation: any }) => {
                     selectedDocumentId: item.documentId,
                   })
                 );
-                navigation.navigate("Profile");
+                if (!searchCardScreen.longPress) {
+                  navigation.navigate("Profile");
+                }
+              }}
+              onLongPress={() => {
+                store.dispatch(
+                  AChangeSearchCardScreen({
+                    longPress: !searchCardScreen.longPress,
+                  })
+                );
               }}
             >
               <CardItem {...item} />
+              <View style={SSearch.centeredModel}>
+                <Modal
+                  animationType="slide"
+                  transparent={true}
+                  visible={
+                    searchCardScreen.longPress &&
+                    searchCardScreen.selectedDocumentId == item.documentId
+                  }
+                  onRequestClose={() => {
+                    Alert.alert("Modal has been closed.");
+                    store.dispatch(
+                      AChangeSearchCardScreen({
+                        selectedDocumentId: "",
+                      })
+                    );
+                  }}
+                >
+                  <View style={SSearch.centeredModel}>
+                    <View style={SSearch.modalView}>
+                      <Text style={styles.title}>
+                        Are you sure you want to delete{" "}
+                        <Text style={styles.bodyBold}>{item.name}'s</Text>{" "}
+                        namecard?
+                      </Text>
+                      <View style={{ flexDirection: "row" }}>
+                        <Pressable
+                          style={styles.roundedButtonSecondary}
+                          onPress={() => {
+                            console.log("Deleting card", item);
+                            apiProfileCollection.deleteDocument(
+                              item.documentId
+                            );
+                            let newSearchCard = [
+                              ...searchCardScreen.searchCard,
+                            ].filter((i) => {
+                              return i.documentId != item.documentId;
+                            });
+                            store.dispatch(
+                              AChangeSearchCardScreen({
+                                searchCard: newSearchCard,
+                                selectedDocumentId: "",
+                              })
+                            );
+                          }}
+                        >
+                          <Text style={{ ...styles.bodyBold, color: WHITE }}>
+                            Yes
+                          </Text>
+                        </Pressable>
+                        <Pressable
+                          style={styles.roundedButtonPrimary}
+                          onPress={() =>
+                            store.dispatch(
+                              AChangeSearchCardScreen({
+                                selectedDocumentId: "",
+                              })
+                            )
+                          }
+                        >
+                          <Text style={{ ...styles.bodyBold, color: WHITE }}>
+                            No
+                          </Text>
+                        </Pressable>
+                      </View>
+                    </View>
+                  </View>
+                </Modal>
+              </View>
             </TouchableOpacity>
           )}
         />

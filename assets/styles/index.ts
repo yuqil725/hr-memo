@@ -1,7 +1,7 @@
 import { StyleSheet, Dimensions } from "react-native";
 
-export const PRIMARY_COLOR = "#7444C0";
-export const SECONDARY_COLOR = "#5636B8";
+export const PRIMARY_COLOR = "#5636B8";
+export const SECONDARY_COLOR = "#D2EAEA";
 export const WHITE = "#FFFFFF";
 export const GRAY = "#757E90";
 export const DARK_GRAY = "#363636";
@@ -91,7 +91,15 @@ export default StyleSheet.create({
     justifyContent: "space-between",
     alignItems: "center",
   },
+
+  // Text
   title: { paddingBottom: 10, fontSize: 22, color: DARK_GRAY },
+  body: { fontSize: 22, color: DARK_GRAY },
+  bodyBold: {
+    fontSize: 22,
+    color: DARK_GRAY,
+    fontWeight: "bold",
+  },
 
   // CONTAINER - HOME
   containerHome: {
@@ -143,11 +151,23 @@ export default StyleSheet.create({
     alignItems: "center",
     marginRight: 10,
   },
-  roundedButton: {
+  roundedButtonPrimary: {
     justifyContent: "center",
     flexDirection: "row",
     alignItems: "center",
     marginLeft: 10,
+    marginRight: 10,
+    height: 50,
+    borderRadius: 25,
+    backgroundColor: PRIMARY_COLOR,
+    paddingHorizontal: 20,
+  },
+  roundedButtonSecondary: {
+    justifyContent: "center",
+    flexDirection: "row",
+    alignItems: "center",
+    marginLeft: 10,
+    marginRight: 10,
     height: 50,
     borderRadius: 25,
     backgroundColor: SECONDARY_COLOR,
