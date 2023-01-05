@@ -44,7 +44,6 @@ const Search = ({ navigation }: { navigation: any }) => {
     let promise = apiProfileCollection.listDocument();
     promise.then(
       function (response: any) {
-        console.log("Search.tsx", response);
         let newSearchState = {
           searchCard: response.documents.map((e: ISearchCard) => {
             return objectMapKey(objectFilterKey(e, ISSearchCard), ISSearchCard);

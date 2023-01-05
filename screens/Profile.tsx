@@ -27,6 +27,10 @@ import { ApiProfileBucket } from "../backend/appwrite/service/storage/bucket/pro
 import { useSelector } from "react-redux";
 import { ISearchCardScreen } from "../interfaces/search";
 import { snakeCase } from "../backend/stringUtil";
+import {
+  EMPTY_CARD,
+  NEW_CARD,
+} from "../redux_modules/reducer/change_search_card_screen";
 
 const Profile = ({ navigation }: { navigation: any }) => {
   let apiProfileCollection = new ApiProfileCollection(
@@ -51,13 +55,10 @@ const Profile = ({ navigation }: { navigation: any }) => {
   );
 
   useEffect(() => {
-    console.log(
-      "searchCardScreen.selectedCard.documentId",
-      searchCardScreen.selectedCard.documentId
-    );
     if (
       searchCardScreen.selectedCard.documentId &&
-      searchCardScreen.selectedCard.documentId !== ""
+      searchCardScreen.selectedCard.documentId !== EMPTY_CARD.documentId &&
+      searchCardScreen.selectedCard.documentId !== NEW_CARD.documentId
     ) {
       let promise = apiProfileCollection.queryByDocumentId(
         searchCardScreen.selectedCard.documentId
@@ -65,14 +66,14 @@ const Profile = ({ navigation }: { navigation: any }) => {
       promise.then(
         function (response: any) {
           console.log("Profile.tsx", response);
-          let newDisplayState: IProfileDisplayItem = objectMapKey(
+          let newDisplayState = objectMapKey(
             objectFilterKey(response.documents[0], ISProfileDisplayItem),
             ISProfileDisplayItem
-          ) as IProfileDisplayItem;
-          let newMetaState: IProfileMetaItem = objectMapKey(
+          );
+          let newMetaState = objectMapKey(
             objectFilterKey(response.documents[0], ISProfileMetaItem),
             ISProfileMetaItem
-          ) as IProfileMetaItem;
+          );
           console.log("set profile state", {
             display: newDisplayState,
             meta: newMetaState,
