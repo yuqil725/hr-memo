@@ -1,10 +1,22 @@
 import { AnyAction } from "redux";
-import { ISearchCardScreen } from "../../interfaces/search";
+import { ISearchCard, ISearchCardScreen } from "../../interfaces/search";
+
+export const EMPTY_CARD: ISearchCard = {
+  name: "",
+  documentId: "",
+  imagePath: undefined,
+};
+
+export const NEW_CARD: ISearchCard = {
+  name: " ",
+  documentId: " ",
+  imagePath: undefined,
+};
 
 const RChangeSearchCardScreen = (
   state: ISearchCardScreen = {
-    selectedDocumentId: "",
-    searchCard: [{ name: "", documentId: "", imagePath: undefined }],
+    selectedCard: EMPTY_CARD,
+    searchCard: [EMPTY_CARD],
     longPress: false,
   },
   action: AnyAction

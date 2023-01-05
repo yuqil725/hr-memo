@@ -2,6 +2,7 @@ import { StyleSheet, Dimensions } from "react-native";
 
 export const PRIMARY_COLOR = "#5636B8";
 export const SECONDARY_COLOR = "#D2EAEA";
+export const DISABLE_COLOR = "#F7F3F0";
 export const WHITE = "#FFFFFF";
 export const GRAY = "#757E90";
 export const DARK_GRAY = "#363636";

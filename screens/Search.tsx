@@ -23,6 +23,10 @@ import store, { RootState } from "../redux_modules";
 import { AChangeSearchCardScreen } from "../redux_modules/action";
 import { useSelector } from "react-redux";
 import { SSearch } from "../assets/styles/search";
+import {
+  EMPTY_CARD,
+  NEW_CARD,
+} from "../redux_modules/reducer/change_search_card_screen";
 
 const Search = ({ navigation }: { navigation: any }) => {
   let apiProfileCollection = new ApiProfileCollection(
@@ -37,11 +41,6 @@ const Search = ({ navigation }: { navigation: any }) => {
   );
 
   useEffect(() => {
-    store.dispatch(
-      AChangeSearchCardScreen({
-        selectedDocumentId: "",
-      })
-    );
     let promise = apiProfileCollection.listDocument();
     promise.then(
       function (response: any) {
@@ -51,7 +50,7 @@ const Search = ({ navigation }: { navigation: any }) => {
             return objectMapKey(objectFilterKey(e, ISSearchCard), ISSearchCard);
           }),
         };
-        newSearchState.searchCard.push({ name: " ", documentId: " " });
+        newSearchState.searchCard.push(NEW_CARD);
         console.log("set search state", newSearchState);
         store.dispatch(AChangeSearchCardScreen(newSearchState));
       },
@@ -59,7 +58,7 @@ const Search = ({ navigation }: { navigation: any }) => {
         console.error(error);
       }
     );
-  }, []);
+  }, [searchCardScreen.selectedCard]);
 
   return (
     <ImageBackground
@@ -83,7 +82,7 @@ const Search = ({ navigation }: { navigation: any }) => {
               onPress={() => {
                 store.dispatch(
                   AChangeSearchCardScreen({
-                    selectedDocumentId: item.documentId,
+                    selectedCard: item,
                   })
                 );
                 if (!searchCardScreen.longPress) {
@@ -105,13 +104,13 @@ const Search = ({ navigation }: { navigation: any }) => {
                   transparent={true}
                   visible={
                     searchCardScreen.longPress &&
-                    searchCardScreen.selectedDocumentId == item.documentId
+                    searchCardScreen.selectedCard.documentId == item.documentId
                   }
                   onRequestClose={() => {
                     Alert.alert("Modal has been closed.");
                     store.dispatch(
                       AChangeSearchCardScreen({
-                        selectedDocumentId: "",
+                        selectedCard: EMPTY_CARD,
                       })
                     );
                   }}
@@ -139,7 +138,7 @@ const Search = ({ navigation }: { navigation: any }) => {
                             store.dispatch(
                               AChangeSearchCardScreen({
                                 searchCard: newSearchCard,
-                                selectedDocumentId: "",
+                                selectedCard: EMPTY_CARD,
                               })
                             );
                           }}
@@ -153,7 +152,7 @@ const Search = ({ navigation }: { navigation: any }) => {
                           onPress={() =>
                             store.dispatch(
                               AChangeSearchCardScreen({
-                                selectedDocumentId: "",
+                                selectedCard: EMPTY_CARD,
                               })
                             )
                           }

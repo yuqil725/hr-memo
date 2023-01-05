@@ -8,11 +8,11 @@ export const ISSearchCard = {
 export interface ISearchCard {
   name: string;
   documentId: string;
-  imagePath: any;
+  imagePath?: any;
 }
 
 export interface ISearchCardScreen {
-  selectedDocumentId: string;
+  selectedCard: ISearchCard;
   searchCard: ISearchCard[];
   longPress: boolean;
 }

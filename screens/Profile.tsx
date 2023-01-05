@@ -16,7 +16,9 @@ import {
   AChangeMetaProfile,
 } from "../redux_modules/action";
 import {
+  IProfileDisplayItem,
   IProfileItem,
+  IProfileMetaItem,
   ISProfileDisplayItem,
   ISProfileMetaItem,
 } from "../interfaces/profile";
@@ -24,10 +26,9 @@ import { objectFilterKey, objectMapKey } from "../backend/objectUtil";
 import { ApiProfileBucket } from "../backend/appwrite/service/storage/bucket/profile";
 import { useSelector } from "react-redux";
 import { ISearchCardScreen } from "../interfaces/search";
-import { UnknownName } from "../backend/constants";
 import { snakeCase } from "../backend/stringUtil";
 
-const Profile = () => {
+const Profile = ({ navigation }: { navigation: any }) => {
   let apiProfileCollection = new ApiProfileCollection(
     Constants.API_ENDPOINT,
     Constants.P_NAMECARD_ID,
@@ -45,25 +46,33 @@ const Profile = () => {
     (state: RootState) => state.searchCardScreen
   );
 
+  let profileItem: IProfileItem = useSelector(
+    (state: RootState) => state.profile
+  );
+
   useEffect(() => {
+    console.log(
+      "searchCardScreen.selectedCard.documentId",
+      searchCardScreen.selectedCard.documentId
+    );
     if (
-      searchCardScreen.selectedDocumentId &&
-      searchCardScreen.selectedDocumentId !== ""
+      searchCardScreen.selectedCard.documentId &&
+      searchCardScreen.selectedCard.documentId !== ""
     ) {
       let promise = apiProfileCollection.queryByDocumentId(
-        searchCardScreen.selectedDocumentId
+        searchCardScreen.selectedCard.documentId
       );
       promise.then(
         function (response: any) {
           console.log("Profile.tsx", response);
-          let newDisplayState = objectMapKey(
+          let newDisplayState: IProfileDisplayItem = objectMapKey(
             objectFilterKey(response.documents[0], ISProfileDisplayItem),
             ISProfileDisplayItem
-          );
-          let newMetaState = objectMapKey(
+          ) as IProfileDisplayItem;
+          let newMetaState: IProfileMetaItem = objectMapKey(
             objectFilterKey(response.documents[0], ISProfileMetaItem),
             ISProfileMetaItem
-          );
+          ) as IProfileMetaItem;
           console.log("set profile state", {
             display: newDisplayState,
             meta: newMetaState,
@@ -75,18 +84,8 @@ const Profile = () => {
           console.error(error);
         }
       );
-    } else {
-      // Create a new profile
-      console.log("Creating a new profile");
-      apiProfileCollection.createDocument({
-        Name: UnknownName,
-      });
     }
-  }, [searchCardScreen.selectedDocumentId]);
-
-  let profileItem: IProfileItem = useSelector(
-    (state: RootState) => state.profile
-  );
+  }, [searchCardScreen.selectedCard.documentId]);
 
   let imageName = snakeCase(profileItem.display.name + " 1");
 

@@ -9,6 +9,7 @@ import {
 import {
   AChangeDisplayProfile,
   AChangeProfileScreenActivity,
+  AChangeSearchCardScreen,
 } from "../redux_modules/action";
 import store, { RootState } from "../redux_modules";
 import { useSelector } from "react-redux";
@@ -19,10 +20,12 @@ import DropDownPicker from "react-native-dropdown-picker";
 import { Constants } from "../Constants";
 import { friendshipStage } from "../backend/constants";
 import SwipeableItem from "./SwipeableItem";
+import { ISearchCardScreen, ISSearchCard } from "../interfaces/search";
 
 const displayItem = (
   profileItem: IProfileItem,
   profileScreenActivity: IProfileScreenActivity,
+  searchCardScreen: ISearchCardScreen,
   key: any,
   value: any
 ) => {
@@ -72,6 +75,17 @@ const displayItem = (
           }}
           onChangeText={(newValue) => {
             store.dispatch(AChangeDisplayProfile({ [key]: newValue }));
+            // #TODO: here we only assumed search card are made of string fields in profile,
+            // which can change in the future
+            if (Object.values(ISSearchCard).includes(key)) {
+              const newSelectedCard = {
+                ...searchCardScreen.selectedCard,
+                [key]: newValue,
+              };
+              store.dispatch(
+                AChangeSearchCardScreen({ selectedCard: newSelectedCard })
+              );
+            }
           }}
           style={SProfileItem.infoContent}
         />
@@ -190,6 +204,10 @@ const ProfileItem = () => {
     (state: RootState) => state.profileScreenActivity
   );
 
+  let searchCardScreen: ISearchCardScreen = useSelector(
+    (state: RootState) => state.searchCardScreen
+  );
+
   return (
     <View style={SProfileItem.containerProfileItem}>
       {Object.values(profileDisplayItem).map((value: any, index) => {
@@ -219,6 +237,7 @@ const ProfileItem = () => {
                 {displayItem(
                   profileItem,
                   profileScreenActivity,
+                  searchCardScreen,
                   Object.keys(profileDisplayItem).at(index),
                   value
                 )}
