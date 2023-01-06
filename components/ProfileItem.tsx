@@ -72,20 +72,18 @@ const displayItem = (
           onBlur={(e) => {
             let data = { [pascalize(key)]: e.nativeEvent.text };
             apiPofile.updateDocument(profileItem.meta.documentId, data);
-          }}
-          onChangeText={(newValue) => {
-            store.dispatch(AChangeDisplayProfile({ [key]: newValue }));
             // #TODO: here we only assumed search card are made of string fields in profile,
             // which can change in the future
             if (Object.values(ISSearchCard).includes(key)) {
-              const newSelectedCard = {
-                ...searchCardScreen.selectedCard,
-                [key]: newValue,
-              };
-              store.dispatch(
-                AChangeSearchCardScreen({ selectedCard: newSelectedCard })
-              );
+              setTimeout(() => {
+                store.dispatch(
+                  AChangeSearchCardScreen({ renderScreen: Math.random() })
+                );
+              }, 500);
             }
+          }}
+          onChangeText={(newValue) => {
+            store.dispatch(AChangeDisplayProfile({ [key]: newValue }));
           }}
           style={SProfileItem.infoContent}
         />

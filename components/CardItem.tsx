@@ -19,7 +19,6 @@ import { useSelector } from "react-redux";
 import { ApiProfileCollection } from "../backend/appwrite/service/database/collection/profile";
 import { NEW_CARD } from "../redux_modules/reducer/change_search_card_screen";
 import { AChangeSearchCardScreen } from "../redux_modules/action";
-import { ID } from "appwrite";
 
 const CardItem = (props: ISearchCard) => {
   // Custom styling
@@ -139,7 +138,7 @@ const CardItem = (props: ISearchCard) => {
                 promise.then(
                   function (response: any) {
                     store.dispatch(
-                      AChangeSearchCardScreen({ renderScreen: ID.toString() })
+                      AChangeSearchCardScreen({ renderScreen: Math.random() })
                     );
                   },
                   function (error: any) {

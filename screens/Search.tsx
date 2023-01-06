@@ -48,7 +48,18 @@ const Search = ({ navigation }: { navigation: any }) => {
           searchCard: response.documents.map((e: ISearchCard) => {
             return objectMapKey(objectFilterKey(e, ISSearchCard), ISSearchCard);
           }),
+          selectedCard: EMPTY_CARD,
         };
+        if (searchCardScreen.selectedCard.documentId != EMPTY_CARD.documentId) {
+          let newSelectedCard = newSearchState.searchCard.filter(
+            (e: ISearchCard) => {
+              return e.documentId == searchCardScreen.selectedCard.documentId;
+            }
+          );
+          if (newSelectedCard.length == 1) {
+            newSearchState.selectedCard = newSelectedCard.at(0);
+          }
+        }
         newSearchState.searchCard.push(NEW_CARD);
         console.log("set search state", newSearchState);
         store.dispatch(AChangeSearchCardScreen(newSearchState));
