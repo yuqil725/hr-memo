@@ -209,7 +209,11 @@ const ProfileItem = () => {
   return (
     <View style={SProfileItem.containerProfileItem}>
       {Object.values(profileDisplayItem).map((value: any, index) => {
-        if (Object.keys(profileDisplayItem).at(index)!.at(0) !== "$")
+        if (
+          Object.keys(profileDisplayItem).at(index)!.at(0) !== "$" &&
+          Object.keys(profileDisplayItem).at(index)! !==
+            ISProfileDisplayItem.ImagePath
+        )
           return (
             // zIndex should be high if the display item is dropdown
             // #TODO: make it more generic instead of hardcoded

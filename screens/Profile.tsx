@@ -95,44 +95,39 @@ const Profile = ({ navigation }: { navigation: any }) => {
         alignItems: "center",
       }}
     >
-      <ImageBackground
-        source={
-          profileItem.display.imagePath
-            ? {
-                uri: apiProfileBucket.getFilePreview(imageName).toString(),
-              }
-            : {}
-        }
-        style={styles.bg}
-      >
-        <ScrollView style={styles.containerProfile}>
-          <ImageBackground
-            source={profileItem.display.imagePath}
-            style={styles.photo}
-          >
-            <View style={styles.top}>
-              <TouchableOpacity>
-                <Icon
-                  name="chevron-back"
-                  size={20}
-                  color={WHITE}
-                  style={styles.topIconLeft}
-                />
-              </TouchableOpacity>
+      <ScrollView style={styles.containerProfile}>
+        <ImageBackground
+          source={
+            profileItem.display.imagePath
+              ? {
+                  uri: apiProfileBucket.getFilePreview(imageName).toString(),
+                }
+              : {}
+          }
+          style={styles.photo}
+        ></ImageBackground>
+        <View style={styles.top}>
+          <TouchableOpacity>
+            <Icon
+              name="chevron-back"
+              size={20}
+              color={WHITE}
+              style={styles.topIconLeft}
+            />
+          </TouchableOpacity>
 
-              <TouchableOpacity>
-                <Icon
-                  name="ellipsis-vertical"
-                  size={20}
-                  color={WHITE}
-                  style={styles.topIconRight}
-                />
-              </TouchableOpacity>
-            </View>
-          </ImageBackground>
-          <ProfileItem />
-        </ScrollView>
-      </ImageBackground>
+          <TouchableOpacity>
+            <Icon
+              name="ellipsis-vertical"
+              size={20}
+              color={WHITE}
+              style={styles.topIconRight}
+            />
+          </TouchableOpacity>
+        </View>
+
+        <ProfileItem />
+      </ScrollView>
     </KeyboardAvoidingView>
   );
 };
