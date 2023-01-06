@@ -97,7 +97,7 @@ const Profile = ({ navigation }: { navigation: any }) => {
     >
       <ImageBackground
         source={
-          profileItem.display.image
+          profileItem.display.imagePath
             ? {
                 uri: apiProfileBucket.getFilePreview(imageName).toString(),
               }
@@ -107,7 +107,7 @@ const Profile = ({ navigation }: { navigation: any }) => {
       >
         <ScrollView style={styles.containerProfile}>
           <ImageBackground
-            source={profileItem.display.image}
+            source={profileItem.display.imagePath}
             style={styles.photo}
           >
             <View style={styles.top}>

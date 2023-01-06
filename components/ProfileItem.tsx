@@ -142,7 +142,7 @@ const displayItem = (
             />
           );
         }
-        case ISProfileDisplayItem.Image: {
+        case ISProfileDisplayItem.ImagePath: {
           return;
         }
         default: {
