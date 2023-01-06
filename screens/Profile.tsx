@@ -16,9 +16,7 @@ import {
   AChangeMetaProfile,
 } from "../redux_modules/action";
 import {
-  IProfileDisplayItem,
   IProfileItem,
-  IProfileMetaItem,
   ISProfileDisplayItem,
   ISProfileMetaItem,
 } from "../interfaces/profile";
@@ -65,7 +63,6 @@ const Profile = ({ navigation }: { navigation: any }) => {
       );
       promise.then(
         function (response: any) {
-          console.log("Profile.tsx", response);
           let newDisplayState = objectMapKey(
             objectFilterKey(response.documents[0], ISProfileDisplayItem),
             ISProfileDisplayItem

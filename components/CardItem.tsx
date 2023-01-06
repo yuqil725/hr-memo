@@ -1,5 +1,12 @@
 import React, { useEffect, useRef } from "react";
-import { Text, View, Image, Dimensions, Animated } from "react-native";
+import {
+  Text,
+  View,
+  Image,
+  Dimensions,
+  Animated,
+  TouchableOpacity,
+} from "react-native";
 import { SCardItem } from "../assets/styles/card_item";
 import { ApiProfileBucket } from "../backend/appwrite/service/storage/bucket/profile";
 import { snakeCase } from "../backend/stringUtil";
@@ -7,8 +14,12 @@ import { Constants } from "../Constants";
 import { ISearchCard, ISearchCardScreen } from "../interfaces/search";
 import { FontAwesome, Ionicons } from "@expo/vector-icons";
 import { GRAY } from "../assets/styles";
-import { RootState } from "../redux_modules";
+import store, { RootState } from "../redux_modules";
 import { useSelector } from "react-redux";
+import { ApiProfileCollection } from "../backend/appwrite/service/database/collection/profile";
+import { NEW_CARD } from "../redux_modules/reducer/change_search_card_screen";
+import { AChangeSearchCardScreen } from "../redux_modules/action";
+import { ID } from "appwrite";
 
 const CardItem = (props: ISearchCard) => {
   // Custom styling
@@ -67,6 +78,13 @@ const CardItem = (props: ISearchCard) => {
       : shakeLoop.reset();
   }, [searchCardScreen.longPress]);
 
+  let apiProfileCollection = new ApiProfileCollection(
+    Constants.API_ENDPOINT,
+    Constants.P_NAMECARD_ID,
+    Constants.DB_NAMECARD_ID,
+    Constants.C_PROFILE_ID
+  );
+
   let apiProfileBucket = new ApiProfileBucket(
     Constants.API_ENDPOINT,
     Constants.P_NAMECARD_ID,
@@ -111,20 +129,42 @@ const CardItem = (props: ISearchCard) => {
         ) : undefined}
 
         {!props.imagePath ? (
-          <View
-            style={{
-              ...imageStyle,
-              justifyContent: "center",
-              alignItems: "center",
+          <TouchableOpacity
+            onPress={() => {
+              if (!searchCardScreen.longPress) {
+                console.log("Creating a new namecard");
+                const promise = apiProfileCollection.createDocument({
+                  Name: NEW_CARD.name,
+                });
+                promise.then(
+                  function (response: any) {
+                    store.dispatch(
+                      AChangeSearchCardScreen({ renderScreen: ID.toString() })
+                    );
+                  },
+                  function (error: any) {
+                    console.error(error);
+                  }
+                );
+              }
+              return;
             }}
           >
-            <Ionicons
-              name="ios-person-add"
-              size={120}
-              color={GRAY}
-              style={{ width: 120 }}
-            />
-          </View>
+            <View
+              style={{
+                ...imageStyle,
+                justifyContent: "center",
+                alignItems: "center",
+              }}
+            >
+              <Ionicons
+                name="ios-person-add"
+                size={120}
+                color={GRAY}
+                style={{ width: 120 }}
+              />
+            </View>
+          </TouchableOpacity>
         ) : undefined}
 
         {/* NAME */}

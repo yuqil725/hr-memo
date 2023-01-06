@@ -57,7 +57,7 @@ const Search = ({ navigation }: { navigation: any }) => {
         console.error(error);
       }
     );
-  }, [searchCardScreen.selectedCard]);
+  }, [searchCardScreen.renderScreen]);
 
   return (
     <ImageBackground
