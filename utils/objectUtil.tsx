@@ -1,6 +1,6 @@
 export const objectFilterKey = (o: any, map: any) => {
-  return Object.keys(o).reduce((acc, key) => {
-    if (Object.keys(map).includes(key)) {
+  return Object.keys(map).reduce((acc, key) => {
+    if (Object.keys(o).includes(key)) {
       return {
         ...acc,
         ...{ [key]: o[key] },
