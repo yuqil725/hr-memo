@@ -31,6 +31,7 @@ import {
   NEW_CARD,
 } from "../redux_modules/reducer/change_search_card_screen";
 import { PickImage } from "../utils/cameraUtil";
+import GestureRecognizer from "react-native-swipe-gestures";
 
 const Profile = ({ navigation }: { navigation: any }) => {
   let apiProfileCollection = new ApiProfileCollection(
@@ -129,25 +130,32 @@ const Profile = ({ navigation }: { navigation: any }) => {
       }}
     >
       <ScrollView style={styles.containerProfile}>
-        <TouchableOpacity
-          onLongPress={async () => {
-            console.log("Opening photo library");
-            await pickImage();
+        <GestureRecognizer
+          style={{ flex: 1 }}
+          onSwipeRight={() => {
+            navigation.goBack();
           }}
         >
-          <ImageBackground
-            source={
-              profileItem.display.imagePath
-                ? {
-                    uri: apiProfileBucket
-                      .getFilePreview(profileItem.display.imagePath)
-                      .toString(),
-                  }
-                : {}
-            }
-            style={styles.photo}
-          ></ImageBackground>
-        </TouchableOpacity>
+          <TouchableOpacity
+            onLongPress={async () => {
+              console.log("Opening photo library");
+              await pickImage();
+            }}
+          >
+            <ImageBackground
+              source={
+                profileItem.display.imagePath
+                  ? {
+                      uri: apiProfileBucket
+                        .getFilePreview(profileItem.display.imagePath)
+                        .toString(),
+                    }
+                  : {}
+              }
+              style={styles.photo}
+            />
+          </TouchableOpacity>
+        </GestureRecognizer>
         <View style={styles.top}>
           <TouchableOpacity>
             <Icon
@@ -167,7 +175,6 @@ const Profile = ({ navigation }: { navigation: any }) => {
             />
           </TouchableOpacity>
         </View>
-
         <ProfileItem />
       </ScrollView>
     </KeyboardAvoidingView>
