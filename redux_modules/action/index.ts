@@ -27,3 +27,10 @@ export const AChangeSearchCardScreen = (p: any) => {
     payload: p,
   };
 };
+
+export const AChangeSingleSearchCard = (p: any) => {
+  return {
+    type: "CHANGE_SINGLE_SEARCH_CARD",
+    payload: p,
+  };
+};

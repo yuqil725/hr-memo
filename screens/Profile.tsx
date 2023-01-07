@@ -14,21 +14,23 @@ import store, { RootState } from "../redux_modules";
 import {
   AChangeDisplayProfile,
   AChangeMetaProfile,
+  AChangeSingleSearchCard,
 } from "../redux_modules/action";
 import {
   IProfileItem,
   ISProfileDisplayItem,
   ISProfileMetaItem,
 } from "../interfaces/profile";
-import { objectFilterKey, objectMapKey } from "../backend/objectUtil";
+import { objectFilterKey, objectMapKey } from "../utils/objectUtil";
 import { ApiProfileBucket } from "../backend/appwrite/service/storage/bucket/profile";
 import { useSelector } from "react-redux";
 import { ISearchCardScreen } from "../interfaces/search";
-import { snakeCase } from "../backend/stringUtil";
+import { snakeCase } from "../utils/stringUtil";
 import {
   EMPTY_CARD,
   NEW_CARD,
 } from "../redux_modules/reducer/change_search_card_screen";
+import { PickImage } from "../utils/cameraUtil";
 
 const Profile = ({ navigation }: { navigation: any }) => {
   let apiProfileCollection = new ApiProfileCollection(
@@ -51,6 +53,39 @@ const Profile = ({ navigation }: { navigation: any }) => {
   let profileItem: IProfileItem = useSelector(
     (state: RootState) => state.profile
   );
+
+  const pickImage = async () => {
+    // No permissions request is necessary for launching the image library
+    let result: any = await PickImage();
+
+    const fileName = snakeCase(profileItem.display.name + " 1");
+
+    if (!result.canceled) {
+      profileItem.display.imagePath.map((img: string) => {
+        apiProfileBucket.deleteFile(img);
+      });
+      console.log("Uploading new image");
+      const response: any = await apiProfileBucket.createFile(
+        result.assets[0].uri,
+        fileName
+      );
+      const fileId = response.$id;
+      const newImagePath: string[] = [fileId];
+      // Update states
+      store.dispatch(AChangeDisplayProfile({ imagePath: newImagePath }));
+      store.dispatch(
+        AChangeSingleSearchCard({
+          documentId: profileItem.meta.documentId,
+          imagePath: newImagePath,
+        })
+      );
+
+      // Update DB
+      apiProfileCollection.updateByDocumentId(profileItem.meta.documentId, {
+        ImagePath: newImagePath,
+      });
+    }
+  };
 
   useEffect(() => {
     if (
@@ -85,8 +120,6 @@ const Profile = ({ navigation }: { navigation: any }) => {
     }
   }, [searchCardScreen.selectedCard.documentId]);
 
-  let imageName = snakeCase(profileItem.display.name + " 1");
-
   return (
     <KeyboardAvoidingView
       behavior="position"
@@ -96,16 +129,25 @@ const Profile = ({ navigation }: { navigation: any }) => {
       }}
     >
       <ScrollView style={styles.containerProfile}>
-        <ImageBackground
-          source={
-            profileItem.display.imagePath
-              ? {
-                  uri: apiProfileBucket.getFilePreview(imageName).toString(),
-                }
-              : {}
-          }
-          style={styles.photo}
-        ></ImageBackground>
+        <TouchableOpacity
+          onLongPress={async () => {
+            console.log("Opening photo library");
+            await pickImage();
+          }}
+        >
+          <ImageBackground
+            source={
+              profileItem.display.imagePath
+                ? {
+                    uri: apiProfileBucket
+                      .getFilePreview(profileItem.display.imagePath)
+                      .toString(),
+                  }
+                : {}
+            }
+            style={styles.photo}
+          ></ImageBackground>
+        </TouchableOpacity>
         <View style={styles.top}>
           <TouchableOpacity>
             <Icon

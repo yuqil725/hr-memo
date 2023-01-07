@@ -22,7 +22,7 @@ const TabBarIcon = ({ focused, iconName, text }: TTabBarIcon) => {
   }
   useEffect(() => {
     text = searchCardScreen.selectedCard.name;
-  }, [searchCardScreen.renderScreen]);
+  }, [searchCardScreen.selectedCard.name]);
 
   return (
     <View style={styles.iconMenu}>

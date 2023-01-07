@@ -9,12 +9,12 @@ import {
 import {
   AChangeDisplayProfile,
   AChangeProfileScreenActivity,
-  AChangeSearchCardScreen,
+  AChangeSingleSearchCard,
 } from "../redux_modules/action";
 import store, { RootState } from "../redux_modules";
 import { useSelector } from "react-redux";
 import SProfileItem from "../assets/styles/profileItem";
-import { pascalize } from "../backend/stringUtil";
+import { pascalize } from "../utils/stringUtil";
 import { ApiProfileCollection } from "../backend/appwrite/service/database/collection/profile";
 import DropDownPicker from "react-native-dropdown-picker";
 import { Constants } from "../Constants";
@@ -75,11 +75,12 @@ const displayItem = (
             // #TODO: here we only assumed search card are made of string fields in profile,
             // which can change in the future
             if (Object.values(ISSearchCard).includes(key)) {
-              setTimeout(() => {
-                store.dispatch(
-                  AChangeSearchCardScreen({ renderScreen: Math.random() })
-                );
-              }, 500);
+              store.dispatch(
+                AChangeSingleSearchCard({
+                  documentId: profileItem.meta.documentId,
+                  [key]: e.nativeEvent.text,
+                })
+              );
             }
           }}
           onChangeText={(newValue) => {

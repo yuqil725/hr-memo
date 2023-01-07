@@ -24,6 +24,23 @@ const RChangeSearchCardScreen = (
   switch (action.type) {
     case "CHANGE_SEARCH_CARD_SCREEN":
       return { ...state, ...action.payload };
+    case "CHANGE_SINGLE_SEARCH_CARD":
+      const newSearchCard = state.searchCard.map((card: ISearchCard) => {
+        if (card.documentId == action.payload.documentId) {
+          return { ...card, ...action.payload };
+        } else {
+          return card;
+        }
+      });
+      let newSelectedCard: ISearchCard = { ...state.selectedCard };
+      if (newSelectedCard.documentId == action.payload.documentId) {
+        newSelectedCard = { ...newSelectedCard, ...action.payload };
+      }
+      return {
+        ...state,
+        selectedCard: newSelectedCard,
+        searchCard: newSearchCard,
+      };
     default:
       return state;
   }

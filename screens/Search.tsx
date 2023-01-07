@@ -13,7 +13,7 @@ import { CardItem, Icon } from "../components";
 import styles, { DARK_GRAY, WHITE } from "../assets/styles";
 import { ApiProfileCollection } from "../backend/appwrite/service/database/collection/profile";
 import { Constants } from "../Constants";
-import { objectFilterKey, objectMapKey } from "../backend/objectUtil";
+import { objectFilterKey, objectMapKey } from "../utils/objectUtil";
 import {
   ISearchCard,
   ISearchCardScreen,

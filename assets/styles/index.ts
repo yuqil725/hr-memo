@@ -125,6 +125,7 @@ export default StyleSheet.create({
   containerProfile: { marginHorizontal: 0 },
   photo: {
     height: DIMENSION_HEIGHT / 2,
+    width: DIMENSION_WIDTH,
   },
   topIconLeft: {
     paddingLeft: 20,

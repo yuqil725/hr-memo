@@ -21,6 +21,7 @@
     "@types/node": "^18.11.17",
     "appwrite": "^10.1.0",
     "expo": "^47.0.9",
+    "expo-image-picker": "^14.0.2",
     "expo-status-bar": "~1.4.2",
     "expo-updates": "~0.15.6",
     "googleapis": "^109.0.1",

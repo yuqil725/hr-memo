@@ -9,7 +9,6 @@ import {
 } from "react-native";
 import { SCardItem } from "../assets/styles/card_item";
 import { ApiProfileBucket } from "../backend/appwrite/service/storage/bucket/profile";
-import { snakeCase } from "../backend/stringUtil";
 import { Constants } from "../Constants";
 import { ISearchCard, ISearchCardScreen } from "../interfaces/search";
 import { FontAwesome, Ionicons } from "@expo/vector-icons";
@@ -91,7 +90,6 @@ const CardItem = (props: ISearchCard) => {
   );
 
   // #TODO: need to change once supporting multiple images
-  let imageName = snakeCase(props.name + " 1");
 
   return (
     <Animated.View
@@ -111,7 +109,7 @@ const CardItem = (props: ISearchCard) => {
         {props.imagePath && props.imagePath.length > 0 ? (
           <Image
             source={{
-              uri: apiProfileBucket.getFilePreview(imageName).toString(),
+              uri: apiProfileBucket.getFilePreview(props.imagePath).toString(),
             }}
             style={imageStyle}
           />
