@@ -21,6 +21,7 @@ import { Constants } from "../Constants";
 import { friendshipStage } from "../backend/constants";
 import SwipeableItem from "./SwipeableItem";
 import { ISearchCardScreen, ISSearchCard } from "../interfaces/search";
+import { StrToTs, TsToStr } from "../utils/dateUtil";
 
 const displayItem = (
   profileItem: IProfileItem,
@@ -35,6 +36,14 @@ const displayItem = (
     Constants.DB_NAMECARD_ID,
     Constants.C_PROFILE_ID
   );
+
+  const addDateString = (s: string, prefix: string = " ") => {
+    if (s.startsWith(prefix)) {
+      s = TsToStr(Date.now());
+    }
+    return s;
+  };
+
   function onSwipeableCloseCallbackOnArray(
     direction: "left" | "right",
     onSwipeableCloseCallbackProps: any
@@ -160,8 +169,9 @@ const displayItem = (
               >
                 <View style={SProfileItem.infoList}>
                   <TextInput
-                    multiline
-                    value={v}
+                    returnKeyType="done"
+                    keyboardType="default"
+                    value={addDateString(v)}
                     placeholder={
                       "Swipe-> to Add, Swipe<- to Delete, Click to edit"
                     }

@@ -44,6 +44,7 @@ let SProfileItem = StyleSheet.create({
   infoList: {
     paddingVertical: 8,
     justifyContent: "center",
+    flexDirection: "row",
   },
   iconProfile: {
     fontSize: 12,
