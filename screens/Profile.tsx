@@ -133,16 +133,6 @@ const Profile = ({ navigation }: { navigation: any }) => {
   }, [searchCardScreen.selectedCard.documentId]);
 
   const ProfileImageCaller = () => {
-    console.log(
-      profileItem.display.imagePath,
-      profileItem.display.imagePath && profileItem.display.imagePath.length > 0
-        ? {
-            uri: apiProfileBucket
-              .getFilePreview(profileItem.display.imagePath.at(0))
-              .toString(),
-          }
-        : undefined
-    );
     return (
       <ProfileImage
         onPressCallback={async () => {

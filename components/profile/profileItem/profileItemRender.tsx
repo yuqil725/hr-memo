@@ -21,6 +21,7 @@ import {
 import { TsToStr } from "../../../utils/dateUtil";
 import { pascalize } from "../../../utils/stringUtil";
 import SwipeableItem from "../../SwipeableItem";
+import { ProfileArrayItem } from "./profileItemRender/profileArrayItem/profileArrayItem";
 
 export const ProfileItemRender = (
   profileItem: IProfileItem,
@@ -42,35 +43,6 @@ export const ProfileItemRender = (
     return s;
   };
 
-  function onSwipeableCloseCallbackOnArray(
-    direction: "left" | "right",
-    onSwipeableCloseCallbackProps: any
-  ) {
-    // only applicable to Array
-    if (direction == "left") {
-      console.log(`Adding new empty item`);
-      let data: string[] = [
-        ...profileItem.display[
-          onSwipeableCloseCallbackProps.key as keyof IProfileDisplayItem
-        ],
-      ];
-      data.splice(onSwipeableCloseCallbackProps.index + 1, 0, "");
-      let newValue = { [pascalize(key)]: data };
-      apiPofile.updateDocument(profileItem.meta.documentId, newValue);
-      store.dispatch(AChangeDisplayProfile({ [key]: data }));
-    } else if (direction == "right") {
-      let data: string[] = [
-        ...profileItem.display[
-          onSwipeableCloseCallbackProps.key as keyof IProfileDisplayItem
-        ],
-      ];
-      const dataDeleted = data.splice(onSwipeableCloseCallbackProps.index, 1);
-      console.log(`Deleting item ${dataDeleted}`);
-      let newValue = { [pascalize(key)]: data };
-      apiPofile.updateDocument(profileItem.meta.documentId, newValue);
-      store.dispatch(AChangeDisplayProfile({ [key]: data }));
-    }
-  }
   switch (typeof value) {
     case "string": {
       return (
@@ -155,47 +127,19 @@ export const ProfileItemRender = (
         }
         default: {
           // default is string[]
-          if (!value || value.length === 0) {
-            value = [""];
-          }
-          return value.map((v: any, index: any) => {
+          if (key) {
+            if (!value || value.length === 0) {
+              value = [""];
+            }
             return (
-              <SwipeableItem
-                key={index}
-                onSwipeableCloseCallbackProps={{ key: key, index: index }}
-                onSwipeableCloseCallback={onSwipeableCloseCallbackOnArray}
-              >
-                <View style={SProfileItem.infoList}>
-                  <TextInput
-                    returnKeyType="done"
-                    keyboardType="default"
-                    value={addDateString(v)}
-                    placeholder={
-                      "Swipe-> to Add, Swipe<- to Delete, Click to edit"
-                    }
-                    placeholderTextColor="#E6E6E6"
-                    onBlur={(e) => {
-                      let newArray = [...value];
-                      newArray[index] = e.nativeEvent.text;
-                      let data = { [pascalize(key)]: newArray };
-                      apiPofile.updateDocument(
-                        profileItem.meta.documentId,
-                        data
-                      );
-                    }}
-                    onChangeText={(newValue) => {
-                      let newArray = [...value];
-                      newArray[index] = newValue;
-                      store.dispatch(
-                        AChangeDisplayProfile({ [key]: newArray })
-                      );
-                    }}
-                    style={SProfileItem.infoContent}
-                  />
-                </View>
-              </SwipeableItem>
+              <ProfileArrayItem
+                value={value}
+                valueHandler={addDateString}
+                k={key}
+                profileItem={profileItem}
+              />
             );
-          });
+          }
         }
       }
     }

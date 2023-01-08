@@ -40,9 +40,16 @@ export interface IProfileScreenActivity {
 }
 
 export interface ISwipeableItem {
-  onSwipeableCloseCallback?(
+  onSwipeableCloseCallback(
     direction: any,
     onSwipeableCloseCallbackProps: any
   ): void;
   onSwipeableCloseCallbackProps?: any;
+}
+
+export interface IProfileArrayItem {
+  value: string[];
+  valueHandler: any;
+  k: string;
+  profileItem: IProfileItem;
 }

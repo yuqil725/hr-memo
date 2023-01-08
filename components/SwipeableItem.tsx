@@ -76,6 +76,7 @@ export default class SwipeableItem extends Component<
   private close = () => {
     this.swipeableRow?.close();
   };
+
   render() {
     return (
       <Swipeable
@@ -96,13 +97,12 @@ export default class SwipeableItem extends Component<
           }
         }}
         onSwipeableClose={(direction) => {
-          console.log(`Opening swipeable from the ${direction}`);
-          this.props.onSwipeableCloseCallback!(
+          console.log(`Closing swipeable from the ${direction}`);
+          this.props.onSwipeableCloseCallback(
             direction,
             this.props.onSwipeableCloseCallbackProps
           );
         }}
-        // onSwipeableWillClose={onSwipeableCloseCallback}
       >
         {this.props.children}
       </Swipeable>
