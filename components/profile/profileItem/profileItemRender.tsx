@@ -38,7 +38,7 @@ export const ProfileItemRender = (
 
   const addDateString = (s: string, prefix: string = " ") => {
     if (s.startsWith(prefix)) {
-      s = TsToStr(Date.now());
+      s = TsToStr(Date.now()) + s;
     }
     return s;
   };

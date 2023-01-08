@@ -119,6 +119,7 @@ export const ProfileArrayItem: React.FC<IProfileArrayItem> = ({
             >
               <View style={SProfileItem.infoList}>
                 <TextInput
+                  multiline
                   returnKeyType="done"
                   keyboardType="default"
                   value={valueHandler(v)}
