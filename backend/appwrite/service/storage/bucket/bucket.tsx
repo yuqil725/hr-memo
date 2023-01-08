@@ -12,8 +12,10 @@ export class ApiBucket extends ApiStorage {
     this.bucketId = bucketId;
   }
 
-  createFile(filePath: string, fileName: string) {
-    if (Platform.OS === "ios") {
+  createFile(filePath: string, fileName: string, file?: File) {
+    if (file) {
+      return this.storage.createFile(this.bucketId, ID.unique(), file);
+    } else if (Platform.OS === "ios") {
       // do something for ios
       return this.createFileFromIos(filePath, fileName);
     } else if (Platform.OS === "android") {

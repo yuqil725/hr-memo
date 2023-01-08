@@ -1,15 +1,24 @@
 import React, { useEffect } from "react";
 import {
-  ScrollView,
-  View,
-  ImageBackground,
-  TouchableOpacity,
   KeyboardAvoidingView,
+  ScrollView,
+  TouchableOpacity,
+  View,
 } from "react-native";
-import { Icon, ProfileItem } from "../components";
+import GestureRecognizer from "react-native-swipe-gestures";
+import { useSelector } from "react-redux";
 import styles, { WHITE } from "../assets/styles";
 import { ApiProfileCollection } from "../backend/appwrite/service/database/collection/profile";
+import { ApiProfileBucket } from "../backend/appwrite/service/storage/bucket/profile";
+import { Icon, ProfileItem } from "../components";
+import { ProfileImage } from "../components/profile/profileImage/profileImage";
 import { Constants } from "../Constants";
+import {
+  IProfileItem,
+  ISProfileDisplayItem,
+  ISProfileMetaItem,
+} from "../interfaces/profile";
+import { ISearchCardScreen } from "../interfaces/search";
 import store, { RootState } from "../redux_modules";
 import {
   AChangeDisplayProfile,
@@ -17,21 +26,12 @@ import {
   AChangeSingleSearchCard,
 } from "../redux_modules/action";
 import {
-  IProfileItem,
-  ISProfileDisplayItem,
-  ISProfileMetaItem,
-} from "../interfaces/profile";
-import { objectFilterKey, objectMapKey } from "../utils/objectUtil";
-import { ApiProfileBucket } from "../backend/appwrite/service/storage/bucket/profile";
-import { useSelector } from "react-redux";
-import { ISearchCardScreen } from "../interfaces/search";
-import { snakeCase } from "../utils/stringUtil";
-import {
   EMPTY_CARD,
   NEW_CARD,
 } from "../redux_modules/reducer/change_search_card_screen";
 import { PickImage } from "../utils/cameraUtil";
-import GestureRecognizer from "react-native-swipe-gestures";
+import { objectFilterKey, objectMapKey } from "../utils/objectUtil";
+import { snakeCase } from "../utils/stringUtil";
 
 const Profile = ({ navigation }: { navigation: any }) => {
   let apiProfileCollection = new ApiProfileCollection(
@@ -55,6 +55,33 @@ const Profile = ({ navigation }: { navigation: any }) => {
     (state: RootState) => state.profile
   );
 
+  const updateImage = async (url: string, fileName: string, file?: File) => {
+    profileItem.display.imagePath.map((img: string) => {
+      apiProfileBucket.deleteFile(img);
+    });
+    console.log("Uploading new image");
+    const response: any = await apiProfileBucket.createFile(
+      url,
+      fileName,
+      file
+    );
+    const fileId = response.$id;
+    const newImagePath: string[] = [fileId];
+    // Update states
+    store.dispatch(AChangeDisplayProfile({ imagePath: newImagePath }));
+    store.dispatch(
+      AChangeSingleSearchCard({
+        documentId: profileItem.meta.documentId,
+        imagePath: newImagePath,
+      })
+    );
+
+    // Update DB
+    apiProfileCollection.updateByDocumentId(profileItem.meta.documentId, {
+      ImagePath: newImagePath,
+    });
+  };
+
   const pickImage = async () => {
     // No permissions request is necessary for launching the image library
     let result: any = await PickImage();
@@ -62,30 +89,14 @@ const Profile = ({ navigation }: { navigation: any }) => {
     const fileName = snakeCase(profileItem.display.name + " 1");
 
     if (!result.canceled) {
-      profileItem.display.imagePath.map((img: string) => {
-        apiProfileBucket.deleteFile(img);
-      });
-      console.log("Uploading new image");
-      const response: any = await apiProfileBucket.createFile(
-        result.assets[0].uri,
-        fileName
-      );
-      const fileId = response.$id;
-      const newImagePath: string[] = [fileId];
-      // Update states
-      store.dispatch(AChangeDisplayProfile({ imagePath: newImagePath }));
-      store.dispatch(
-        AChangeSingleSearchCard({
-          documentId: profileItem.meta.documentId,
-          imagePath: newImagePath,
-        })
-      );
-
-      // Update DB
-      apiProfileCollection.updateByDocumentId(profileItem.meta.documentId, {
-        ImagePath: newImagePath,
-      });
+      updateImage(result.assets[0].uri, fileName);
     }
+  };
+
+  const dropImage = async (file: File) => {
+    console.log("received dropping file", file);
+    const fileName = snakeCase(profileItem.display.name + " 1");
+    updateImage("", fileName, file);
   };
 
   useEffect(() => {
@@ -121,6 +132,36 @@ const Profile = ({ navigation }: { navigation: any }) => {
     }
   }, [searchCardScreen.selectedCard.documentId]);
 
+  const ProfileImageCaller = () => {
+    console.log(
+      profileItem.display.imagePath,
+      profileItem.display.imagePath && profileItem.display.imagePath.length > 0
+        ? {
+            uri: apiProfileBucket
+              .getFilePreview(profileItem.display.imagePath.at(0))
+              .toString(),
+          }
+        : undefined
+    );
+    return (
+      <ProfileImage
+        onPressCallback={async () => {
+          console.log("Opening photo library");
+          return await pickImage();
+        }}
+        url={
+          profileItem.display.imagePath &&
+          profileItem.display.imagePath.length > 0
+            ? apiProfileBucket
+                .getFilePreview(profileItem.display.imagePath.at(0))
+                .toString()
+            : undefined
+        }
+        onDrop={dropImage}
+      ></ProfileImage>
+    );
+  };
+
   return (
     <KeyboardAvoidingView
       behavior="position"
@@ -136,25 +177,7 @@ const Profile = ({ navigation }: { navigation: any }) => {
             navigation.goBack();
           }}
         >
-          <TouchableOpacity
-            onLongPress={async () => {
-              console.log("Opening photo library");
-              await pickImage();
-            }}
-          >
-            <ImageBackground
-              source={
-                profileItem.display.imagePath
-                  ? {
-                      uri: apiProfileBucket
-                        .getFilePreview(profileItem.display.imagePath)
-                        .toString(),
-                    }
-                  : {}
-              }
-              style={styles.photo}
-            />
-          </TouchableOpacity>
+          <ProfileImageCaller />
         </GestureRecognizer>
         <View style={styles.top}>
           <TouchableOpacity>

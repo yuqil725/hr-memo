@@ -1,32 +1,30 @@
 import React from "react";
-import { Text, TextInput, View } from "react-native";
+import { TextInput, View } from "react-native";
+import DropDownPicker from "react-native-dropdown-picker";
+import SProfileItem from "../../../assets/styles/profileItem";
+import { ApiProfileCollection } from "../../../backend/appwrite/service/database/collection/profile";
+import { friendshipStage } from "../../../backend/constants";
+import { Constants } from "../../../Constants";
 import {
   IProfileDisplayItem,
   IProfileItem,
   IProfileScreenActivity,
   ISProfileDisplayItem,
-} from "../interfaces/profile";
+} from "../../../interfaces/profile";
+import { ISSearchCard } from "../../../interfaces/search";
+import store from "../../../redux_modules";
 import {
   AChangeDisplayProfile,
   AChangeProfileScreenActivity,
   AChangeSingleSearchCard,
-} from "../redux_modules/action";
-import store, { RootState } from "../redux_modules";
-import { useSelector } from "react-redux";
-import SProfileItem from "../assets/styles/profileItem";
-import { pascalize } from "../utils/stringUtil";
-import { ApiProfileCollection } from "../backend/appwrite/service/database/collection/profile";
-import DropDownPicker from "react-native-dropdown-picker";
-import { Constants } from "../Constants";
-import { friendshipStage } from "../backend/constants";
-import SwipeableItem from "./SwipeableItem";
-import { ISearchCardScreen, ISSearchCard } from "../interfaces/search";
-import { StrToTs, TsToStr } from "../utils/dateUtil";
+} from "../../../redux_modules/action";
+import { TsToStr } from "../../../utils/dateUtil";
+import { pascalize } from "../../../utils/stringUtil";
+import SwipeableItem from "../../SwipeableItem";
 
-const displayItem = (
+export const ProfileItemRender = (
   profileItem: IProfileItem,
   profileScreenActivity: IProfileScreenActivity,
-  searchCardScreen: ISearchCardScreen,
   key: any,
   value: any
 ) => {
@@ -203,63 +201,3 @@ const displayItem = (
     }
   }
 };
-
-const ProfileItem = () => {
-  let profileItem: IProfileItem = useSelector(
-    (state: RootState) => state.profile
-  );
-  let profileDisplayItem: IProfileDisplayItem = profileItem.display;
-  let profileScreenActivity: IProfileScreenActivity = useSelector(
-    (state: RootState) => state.profileScreenActivity
-  );
-
-  let searchCardScreen: ISearchCardScreen = useSelector(
-    (state: RootState) => state.searchCardScreen
-  );
-
-  return (
-    <View style={SProfileItem.containerProfileItem}>
-      {Object.values(profileDisplayItem).map((value: any, index) => {
-        if (
-          Object.keys(profileDisplayItem).at(index)!.at(0) !== "$" &&
-          Object.keys(profileDisplayItem).at(index)! !==
-            ISProfileDisplayItem.ImagePath
-        )
-          return (
-            // zIndex should be high if the display item is dropdown
-            // #TODO: make it more generic instead of hardcoded
-            <View
-              key={index}
-              style={{
-                ...SProfileItem.infoSectionView,
-                zIndex:
-                  Object.keys(profileDisplayItem).at(index) ===
-                  ISProfileDisplayItem.FriendshipStage
-                    ? 1
-                    : 0,
-              }}
-            >
-              <View style={SProfileItem.infoSectionTitleView}>
-                <Text style={SProfileItem.infoSectionText}>
-                  {pascalize(Object.keys(profileDisplayItem).at(index))}
-                  :&nbsp;
-                </Text>
-              </View>
-
-              <View style={SProfileItem.infoSectionContent}>
-                {displayItem(
-                  profileItem,
-                  profileScreenActivity,
-                  searchCardScreen,
-                  Object.keys(profileDisplayItem).at(index),
-                  value
-                )}
-              </View>
-            </View>
-          );
-      })}
-    </View>
-  );
-};
-
-export default ProfileItem;
