@@ -1,12 +1,11 @@
 import React from "react";
-import { TextInput, View } from "react-native";
+import { TextInput } from "react-native";
 import DropDownPicker from "react-native-dropdown-picker";
 import SProfileItem from "../../../assets/styles/profileItem";
 import { ApiProfileCollection } from "../../../backend/appwrite/service/database/collection/profile";
 import { friendshipStage } from "../../../backend/constants";
 import { Constants } from "../../../Constants";
 import {
-  IProfileDisplayItem,
   IProfileItem,
   IProfileScreenActivity,
   ISProfileDisplayItem,
@@ -20,7 +19,6 @@ import {
 } from "../../../redux_modules/action";
 import { TsToStr } from "../../../utils/dateUtil";
 import { pascalize } from "../../../utils/stringUtil";
-import SwipeableItem from "../../SwipeableItem";
 import { ProfileArrayItem } from "./profileItemRender/profileArrayItem/profileArrayItem";
 
 export const ProfileItemRender = (

@@ -30,7 +30,11 @@ import {
   NEW_CARD,
 } from "../redux_modules/reducer/change_search_card_screen";
 import { PickImage } from "../utils/cameraUtil";
-import { objectFilterKey, objectMapKey } from "../utils/objectUtil";
+import {
+  objectAddEmptyStrToArray,
+  objectFilterKey,
+  objectMapKey,
+} from "../utils/objectUtil";
 import { snakeCase } from "../utils/stringUtil";
 
 const Profile = ({ navigation }: { navigation: any }) => {
@@ -110,9 +114,11 @@ const Profile = ({ navigation }: { navigation: any }) => {
       );
       promise.then(
         function (response: any) {
-          let newDisplayState = objectMapKey(
-            objectFilterKey(response.documents[0], ISProfileDisplayItem),
-            ISProfileDisplayItem
+          let newDisplayState = objectAddEmptyStrToArray(
+            objectMapKey(
+              objectFilterKey(response.documents[0], ISProfileDisplayItem),
+              ISProfileDisplayItem
+            )
           );
           let newMetaState = objectMapKey(
             objectFilterKey(response.documents[0], ISProfileMetaItem),

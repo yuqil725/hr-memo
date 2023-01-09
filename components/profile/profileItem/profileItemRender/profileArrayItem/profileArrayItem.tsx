@@ -122,15 +122,18 @@ export const ProfileArrayItem: React.FC<IProfileArrayItem> = ({
                   returnKeyType="done"
                   keyboardType="default"
                   value={valueHandler(v)}
-                  placeholder={
-                    "Swipe-> to Add, Swipe<- to Delete, Click to edit"
-                  }
+                  placeholder={"New field"}
                   placeholderTextColor="#E6E6E6"
                   onBlur={(e) => {
                     let newArray = [...value];
                     newArray[index] = e.nativeEvent.text;
                     let data = { [pascalize(k)]: newArray };
                     apiPofile.updateDocument(profileItem.meta.documentId, data);
+                    // add empty first line if it becomes none empty
+                    if (value && value.length > 0 && value.at(0) != "") {
+                      value = ["", ...value];
+                    }
+                    store.dispatch(AChangeDisplayProfile({ [k]: value }));
                   }}
                   onChangeText={(newValue) => {
                     let newArray = [...value];

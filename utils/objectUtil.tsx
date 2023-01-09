@@ -19,3 +19,19 @@ export const objectMapKey = (o: any, map: any) => {
     };
   }, {});
 };
+
+export const objectAddEmptyStrToArray = (o: any) => {
+  return Object.keys(o).reduce((acc, key) => {
+    if (Array.isArray(o[key]) && (o[key].length == 0 || o[key].at(0) != "")) {
+      const newValue = ["", ...o[key]];
+      return {
+        ...acc,
+        ...{ [key]: newValue },
+      };
+    }
+    return {
+      ...acc,
+      ...{ [key]: o[key] },
+    };
+  }, {});
+};
