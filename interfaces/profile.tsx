@@ -37,6 +37,7 @@ export interface IProfileItem {
 
 export interface IProfileScreenActivity {
   friendshipDropdownOpen: boolean;
+  focusItem?: { k: string; index: number };
 }
 
 export interface ISwipeableItem {

@@ -20,17 +20,13 @@ export const objectMapKey = (o: any, map: any) => {
   }, {});
 };
 
-export const objectAddEmptyStrToArray = (
+export const objectAddOneStartEmptyStrToArray = (
   o: any,
   exception: string[] = ["imagePath", "education", "livingAddress"]
 ) => {
   return Object.keys(o).reduce((acc, key) => {
-    if (
-      Array.isArray(o[key]) &&
-      (o[key].length == 0 || o[key].at(0) != "") &&
-      !exception.includes(key)
-    ) {
-      const newValue = ["", ...o[key]];
+    if (Array.isArray(o[key]) && !exception.includes(key)) {
+      const newValue = ["", ...objectRemoveEmptyStr(o[key])];
       return {
         ...acc,
         ...{ [key]: newValue },

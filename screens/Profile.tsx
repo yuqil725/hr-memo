@@ -31,7 +31,7 @@ import {
 } from "../redux_modules/reducer/change_search_card_screen";
 import { PickImage } from "../utils/cameraUtil";
 import {
-  objectAddEmptyStrToArray,
+  objectAddOneStartEmptyStrToArray,
   objectFilterKey,
   objectMapKey,
 } from "../utils/objectUtil";
@@ -114,7 +114,7 @@ const Profile = ({ navigation }: { navigation: any }) => {
       );
       promise.then(
         function (response: any) {
-          let newDisplayState = objectAddEmptyStrToArray(
+          let newDisplayState = objectAddOneStartEmptyStrToArray(
             objectMapKey(
               objectFilterKey(response.documents[0], ISProfileDisplayItem),
               ISProfileDisplayItem

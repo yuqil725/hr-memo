@@ -1,5 +1,6 @@
-import React, { useState } from "react";
+import React, { useRef, useState } from "react";
 import { Alert, Modal, Pressable, Text, TextInput, View } from "react-native";
+import { useSelector } from "react-redux";
 import styles, { WHITE } from "../../../../../assets/styles";
 import SProfileItem from "../../../../../assets/styles/profileItem";
 import { SSearch } from "../../../../../assets/styles/search";
@@ -8,11 +9,14 @@ import { Constants } from "../../../../../Constants";
 import {
   IProfileArrayItem,
   IProfileDisplayItem,
+  IProfileScreenActivity,
 } from "../../../../../interfaces/profile";
-import store from "../../../../../redux_modules";
-import { AChangeDisplayProfile } from "../../../../../redux_modules/action";
+import store, { RootState } from "../../../../../redux_modules";
+import {
+  AChangeDisplayProfile,
+  AChangeProfileScreenActivity,
+} from "../../../../../redux_modules/action";
 import { pascalize } from "../../../../../utils/stringUtil";
-import SwipeableItem from "../../../../SwipeableItem";
 
 export const ProfileArrayItem: React.FC<IProfileArrayItem> = ({
   value,
@@ -56,6 +60,16 @@ export const ProfileArrayItem: React.FC<IProfileArrayItem> = ({
       setDeleteItem({ key: key, data: data });
     }
   }
+
+  let profileScreenActivity: IProfileScreenActivity = useSelector(
+    (state: RootState) => state.profileScreenActivity
+  );
+
+  // let refs = [];
+  // for (let i = 0; i < value.length; i++) {
+  //   refs.push(useRef(null));
+  // }
+  const inputTextRef: React.MutableRefObject<TextInput | null> = useRef(null);
 
   return (
     <>
@@ -113,37 +127,71 @@ export const ProfileArrayItem: React.FC<IProfileArrayItem> = ({
                 </View>
               </View>
             </Modal>
-            <SwipeableItem
-              onSwipeableCloseCallbackProps={{ key: k, index: index }}
-              onSwipeableCloseCallback={onSwipeableCloseCallbackOnArray}
-            >
-              <View style={SProfileItem.infoList}>
-                <TextInput
-                  returnKeyType="done"
-                  keyboardType="default"
-                  value={valueHandler(v)}
-                  placeholder={"New field"}
-                  placeholderTextColor="#E6E6E6"
-                  onBlur={(e) => {
-                    let newArray = [...value];
-                    newArray[index] = e.nativeEvent.text;
-                    let data = { [pascalize(k)]: newArray };
-                    apiPofile.updateDocument(profileItem.meta.documentId, data);
-                    // add empty first line if it becomes none empty
-                    if (value && value.length > 0 && value.at(0) != "") {
-                      value = ["", ...value];
-                    }
-                    store.dispatch(AChangeDisplayProfile({ [k]: value }));
-                  }}
-                  onChangeText={(newValue) => {
-                    let newArray = [...value];
-                    newArray[index] = newValue;
-                    store.dispatch(AChangeDisplayProfile({ [k]: newArray }));
-                  }}
-                  style={SProfileItem.infoContent}
-                />
-              </View>
-            </SwipeableItem>
+
+            <View style={SProfileItem.infoList}>
+              <TextInput
+                ref={
+                  profileScreenActivity.focusItem?.k == k &&
+                  profileScreenActivity.focusItem.index == index
+                    ? inputTextRef
+                    : undefined
+                }
+                returnKeyType="next"
+                keyboardType="default"
+                value={valueHandler(v)}
+                placeholder={"New field"}
+                placeholderTextColor="#E6E6E6"
+                onBlur={(e) => {
+                  let newArray = [...value];
+                  newArray[index] = e.nativeEvent.text;
+                  // delete empty item if not the first item
+                  if (index > 0 && newArray[index].length == 0) {
+                    newArray.splice(index, 1);
+                  }
+                  let data = { [pascalize(k)]: newArray };
+                  apiPofile.updateDocument(profileItem.meta.documentId, data);
+                  // add empty first line if it becomes none empty
+                  if (newArray && newArray.length > 0 && newArray.at(0) != "") {
+                    newArray = ["", ...newArray];
+                  }
+                  store.dispatch(AChangeDisplayProfile({ [k]: newArray }));
+                }}
+                onFocus={() => {
+                  store.dispatch(
+                    AChangeProfileScreenActivity({
+                      focusItem: { k: k, index: index },
+                    })
+                  );
+                }}
+                onLayout={() => {
+                  if (inputTextRef.current) {
+                    inputTextRef.current.focus();
+                  }
+                }}
+                onChangeText={(newValue) => {
+                  let newArray = [...value];
+                  newArray[index] = newValue;
+                  store.dispatch(AChangeDisplayProfile({ [k]: newArray }));
+                }}
+                onSubmitEditing={(event) => {
+                  let newArray = [...value];
+                  // delete focused empty item if not the first item
+                  if (index > 0 && newArray[index].length == 0) {
+                    newArray.splice(index, 1);
+                  } else {
+                    // add empty item after focused non-empty item
+                    newArray.splice(index + 1, 0, "");
+                    store.dispatch(
+                      AChangeProfileScreenActivity({
+                        focusItem: { k: k, index: Math.max(index + 1, 2) },
+                      })
+                    );
+                  }
+                  store.dispatch(AChangeDisplayProfile({ [k]: newArray }));
+                }}
+                style={SProfileItem.infoContent}
+              />
+            </View>
           </React.Fragment>
         );
       })}
