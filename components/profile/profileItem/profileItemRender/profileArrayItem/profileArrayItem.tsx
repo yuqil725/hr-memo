@@ -3,9 +3,11 @@ import {
   Alert,
   ListViewBase,
   Modal,
+  NativeSyntheticEvent,
   Pressable,
   Text,
   TextInput,
+  TextInputKeyPressEventData,
   View,
 } from "react-native";
 import { useSelector } from "react-redux";
@@ -18,6 +20,7 @@ import {
   IProfileArrayItem,
   IProfileDisplayItem,
   IProfileScreenActivity,
+  ISProfileDisplayItem,
 } from "../../../../../interfaces/profile";
 import store, { RootState } from "../../../../../redux_modules";
 import {
@@ -81,11 +84,23 @@ export const ProfileArrayItem: React.FC<IProfileArrayItem> = ({
         k == ProfileConfig.DEFAULT_FOCUS.key &&
         index == ProfileConfig.DEFAULT_FOCUS.index
       ) {
-        console.log("Going default", k, index);
         return inputTextRef;
       }
     } else {
       return undefined;
+    }
+  }
+
+  function moveFocusItem(k: string, index: number, step: 1 | -1) {
+    const keys = Object.values(ISProfileDisplayItem);
+    if (index + step == -1) {
+      // move up to edge
+      return { k: k, index: value.length - 1 };
+    } else if (index + step == value.length) {
+      // move down to edge
+      return { k: k, index: 0 };
+    } else {
+      return { k: k, index: index + step };
     }
   }
 
@@ -178,7 +193,7 @@ export const ProfileArrayItem: React.FC<IProfileArrayItem> = ({
                     if (inputTextRef.current) {
                       inputTextRef.current.focus();
                     }
-                  }, 200);
+                  }, 50);
                 }}
                 onFocus={() => {
                   store.dispatch(
@@ -186,6 +201,36 @@ export const ProfileArrayItem: React.FC<IProfileArrayItem> = ({
                       focusItem: { k: k, index: index },
                     })
                   );
+                }}
+                onKeyPress={(
+                  e: NativeSyntheticEvent<TextInputKeyPressEventData>
+                ) => {
+                  switch (e.nativeEvent.key) {
+                    case "ArrowDown":
+                      store.dispatch(
+                        AChangeProfileScreenActivity({
+                          focusItem: moveFocusItem(k, index, 1),
+                        })
+                      );
+                      setTimeout(() => {
+                        if (inputTextRef.current) {
+                          inputTextRef.current.focus();
+                        }
+                      }, 50);
+                      return;
+                    case "ArrowUp":
+                      store.dispatch(
+                        AChangeProfileScreenActivity({
+                          focusItem: moveFocusItem(k, index, -1),
+                        })
+                      );
+                      setTimeout(() => {
+                        if (inputTextRef.current) {
+                          inputTextRef.current.focus();
+                        }
+                      }, 50);
+                      return;
+                  }
                 }}
                 onLayout={() => {
                   if (inputTextRef.current) {
@@ -204,13 +249,7 @@ export const ProfileArrayItem: React.FC<IProfileArrayItem> = ({
                     newArray.splice(index, 1);
                     store.dispatch(
                       AChangeProfileScreenActivity({
-                        focusItem: {
-                          k: k,
-                          index: Math.min(
-                            Math.max(index - 1, 2),
-                            newArray.length - 1
-                          ),
-                        },
+                        focusItem: moveFocusItem(k, index, -1),
                       })
                     );
                   } else {
