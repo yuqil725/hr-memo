@@ -18,7 +18,7 @@ import {
   AChangeSingleSearchCard,
 } from "../../../redux_modules/action";
 import { TsToStr } from "../../../utils/dateUtil";
-import { pascalize } from "../../../utils/stringUtil";
+import { Pascalize } from "../../../utils/stringUtil";
 import { ProfileArrayItem } from "./profileItemRender/profileArrayItem/profileArrayItem";
 
 export const ProfileItemRender = (
@@ -47,7 +47,7 @@ export const ProfileItemRender = (
         <TextInput
           value={value}
           onBlur={(e) => {
-            let data = { [pascalize(key)]: e.nativeEvent.text };
+            let data = { [Pascalize(key)]: e.nativeEvent.text };
             apiPofile.updateDocument(profileItem.meta.documentId, data);
             // #TODO: here we only assumed search card are made of string fields in profile,
             // which can change in the future
@@ -114,7 +114,7 @@ export const ProfileItemRender = (
                   })
                 );
                 apiPofile.updateDocument(profileItem.meta.documentId, {
-                  [pascalize(key)]: newArray,
+                  [Pascalize(key)]: newArray,
                 });
               }}
             />

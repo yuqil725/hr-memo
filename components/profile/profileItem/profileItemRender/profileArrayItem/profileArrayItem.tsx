@@ -27,7 +27,7 @@ import {
   AChangeDisplayProfile,
   AChangeProfileScreenActivity,
 } from "../../../../../redux_modules/action";
-import { pascalize } from "../../../../../utils/stringUtil";
+import { Pascalize } from "../../../../../utils/stringUtil";
 import { ProfileConfig } from "../../../profileConfig";
 
 export const ProfileArrayItem: React.FC<IProfileArrayItem> = ({
@@ -58,7 +58,7 @@ export const ProfileArrayItem: React.FC<IProfileArrayItem> = ({
         ],
       ];
       data.splice(onSwipeableCloseCallbackProps.index + 1, 0, "");
-      let newValue = { [pascalize(key)]: data };
+      let newValue = { [Pascalize(key)]: data };
       apiPofile.updateDocument(profileItem.meta.documentId, newValue);
       store.dispatch(AChangeDisplayProfile({ [key]: data }));
     } else if (direction == "right") {
@@ -134,7 +134,7 @@ export const ProfileArrayItem: React.FC<IProfileArrayItem> = ({
                       style={styles.roundedButtonSecondary}
                       onPress={() => {
                         let newValue = {
-                          [pascalize(deleteItem.key)]: deleteItem.data,
+                          [Pascalize(deleteItem.key)]: deleteItem.data,
                         };
                         apiPofile.updateDocument(
                           profileItem.meta.documentId,
@@ -181,7 +181,7 @@ export const ProfileArrayItem: React.FC<IProfileArrayItem> = ({
                   if (index > 0 && newArray[index].length == 0) {
                     newArray.splice(index, 1);
                   }
-                  let data = { [pascalize(k)]: newArray };
+                  let data = { [Pascalize(k)]: newArray };
                   apiPofile.updateDocument(profileItem.meta.documentId, data);
                   // add empty first line if it becomes none empty
                   if (newArray && newArray.length > 0 && newArray.at(0) != "") {
@@ -189,11 +189,11 @@ export const ProfileArrayItem: React.FC<IProfileArrayItem> = ({
                   }
                   store.dispatch(AChangeDisplayProfile({ [k]: newArray }));
                   // make sure inputTextRef is changed before calling focus
-                  setTimeout(() => {
-                    if (inputTextRef.current) {
-                      inputTextRef.current.focus();
-                    }
-                  }, 50);
+                  // setTimeout(() => {
+                  //   if (inputTextRef.current) {
+                  //     inputTextRef.current.focus();
+                  //   }
+                  // }, 50);
                 }}
                 onFocus={() => {
                   store.dispatch(

@@ -1,4 +1,6 @@
-export function pascalize(str: string | undefined) {
+import { ToPinYinName } from "./pinyin";
+
+export function Pascalize(str: string | undefined) {
   if (!str) return "";
   let newStr = str
     .replace(/(?:^\w|[A-Z]|\b\w)/g, function (word, index) {
@@ -8,7 +10,7 @@ export function pascalize(str: string | undefined) {
   return newStr;
 }
 
-export const snakeCase = (string: string) => {
+export const SnakeCase = (string: string) => {
   string = string.replace(/\W+/g, " ").toLowerCase().split(" ").join("_");
 
   if (string.charAt(string.length - 1) === "_") {
@@ -16,4 +18,8 @@ export const snakeCase = (string: string) => {
   }
 
   return string;
+};
+
+export const ProcessName = (name: string) => {
+  return /^[A-Za-z0-9 ]*$/.test(name) ? name.toLowerCase() : ToPinYinName(name);
 };

@@ -9,7 +9,7 @@ import {
   ISProfileDisplayItem,
 } from "../../interfaces/profile";
 import { RootState } from "../../redux_modules";
-import { pascalize } from "../../utils/stringUtil";
+import { Pascalize } from "../../utils/stringUtil";
 import { ProfileItemRender } from "./profileItem/profileItemRender";
 
 const ProfileItem = () => {
@@ -45,7 +45,7 @@ const ProfileItem = () => {
             >
               <View style={SProfileItem.infoSectionTitleView}>
                 <Text style={SProfileItem.infoSectionText}>
-                  {pascalize(Object.keys(profileDisplayItem).at(index))}
+                  {Pascalize(Object.keys(profileDisplayItem).at(index))}
                   :&nbsp;
                 </Text>
               </View>

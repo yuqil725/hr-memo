@@ -11,7 +11,7 @@ import {
 } from "../../../../../interfaces/profile";
 import store from "../../../../../redux_modules";
 import { AChangeDisplayProfile } from "../../../../../redux_modules/action";
-import { pascalize } from "../../../../../utils/stringUtil";
+import { Pascalize } from "../../../../../utils/stringUtil";
 import SwipeableItem from "../../../../SwipeableItem";
 
 export const ProfileArrayItem: React.FC<IProfileArrayItem> = ({
@@ -42,7 +42,7 @@ export const ProfileArrayItem: React.FC<IProfileArrayItem> = ({
         ],
       ];
       data.splice(onSwipeableCloseCallbackProps.index + 1, 0, "");
-      let newValue = { [pascalize(key)]: data };
+      let newValue = { [Pascalize(key)]: data };
       apiPofile.updateDocument(profileItem.meta.documentId, newValue);
       store.dispatch(AChangeDisplayProfile({ [key]: data }));
     } else if (direction == "right") {
@@ -81,7 +81,7 @@ export const ProfileArrayItem: React.FC<IProfileArrayItem> = ({
                       style={styles.roundedButtonSecondary}
                       onPress={() => {
                         let newValue = {
-                          [pascalize(deleteItem.key)]: deleteItem.data,
+                          [Pascalize(deleteItem.key)]: deleteItem.data,
                         };
                         apiPofile.updateDocument(
                           profileItem.meta.documentId,
@@ -130,7 +130,7 @@ export const ProfileArrayItem: React.FC<IProfileArrayItem> = ({
                   onBlur={(e) => {
                     let newArray = [...value];
                     newArray[index] = e.nativeEvent.text;
-                    let data = { [pascalize(k)]: newArray };
+                    let data = { [Pascalize(k)]: newArray };
                     apiPofile.updateDocument(profileItem.meta.documentId, data);
                   }}
                   onChangeText={(newValue) => {

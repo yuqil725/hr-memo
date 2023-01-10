@@ -1,4 +1,4 @@
-import React, { useEffect } from "react";
+import React, { useEffect, useRef } from "react";
 import {
   View,
   Text,
@@ -27,6 +27,8 @@ import {
   EMPTY_CARD,
   NEW_CARD,
 } from "../redux_modules/reducer/change_search_card_screen";
+import { TextInput } from "react-native-gesture-handler";
+import { ProcessName } from "../utils/stringUtil";
 
 const Search = ({ navigation }: { navigation: any }) => {
   let apiProfileCollection = new ApiProfileCollection(
@@ -70,6 +72,8 @@ const Search = ({ navigation }: { navigation: any }) => {
     );
   }, [searchCardScreen.renderScreen]);
 
+  const searchInputRef: React.MutableRefObject<TextInput | null> = useRef(null);
+
   return (
     <ImageBackground
       source={require("../assets/images/bg.png")}
@@ -77,15 +81,55 @@ const Search = ({ navigation }: { navigation: any }) => {
     >
       <View style={styles.containerMatches}>
         <View style={styles.top}>
-          <Text style={styles.title}>Namecards</Text>
-          <TouchableOpacity>
+          <TextInput
+            ref={searchInputRef}
+            placeholder={"Search name"}
+            onLayout={() => {
+              searchInputRef.current!.focus();
+            }}
+            value={searchCardScreen.searchText}
+            onChangeText={(v) => {
+              store.dispatch(AChangeSearchCardScreen({ searchText: v }));
+              if (v === " ") {
+                console.log("Creating a new namecard");
+                const promise = apiProfileCollection.createDocument({
+                  Name: NEW_CARD.name,
+                });
+                promise.then(
+                  function (response: any) {
+                    store.dispatch(
+                      AChangeSearchCardScreen({
+                        renderScreen: Math.random(),
+                        selectedCard: {
+                          name: response.Name,
+                          documentId: response.$id,
+                          imagePath: response.ImagePath,
+                        },
+                      })
+                    );
+                  },
+                  function (error: any) {
+                    console.error(error);
+                  }
+                );
+                navigation.navigate("Profile");
+                store.dispatch(AChangeSearchCardScreen({ searchText: "" }));
+              }
+            }}
+          ></TextInput>
+          {/* <TouchableOpacity>
             <Icon name="ellipsis-vertical" color={DARK_GRAY} size={20} />
-          </TouchableOpacity>
+          </TouchableOpacity> */}
         </View>
 
         <FlatList
           numColumns={2}
-          data={searchCardScreen.searchCard}
+          data={searchCardScreen.searchCard.filter((nc) => {
+            const processedName = ProcessName(nc.name);
+            return processedName.startsWith(
+              searchCardScreen.searchText ? searchCardScreen.searchText : ""
+            );
+          })}
           keyExtractor={(item, index) => index.toString()}
           renderItem={({ item }) => (
             <TouchableOpacity

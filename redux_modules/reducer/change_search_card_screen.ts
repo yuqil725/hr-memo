@@ -18,6 +18,7 @@ const RChangeSearchCardScreen = (
     selectedCard: EMPTY_CARD,
     searchCard: [EMPTY_CARD],
     longPress: false,
+    searchText: "",
   },
   action: AnyAction
 ) => {

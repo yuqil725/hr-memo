@@ -35,7 +35,7 @@ import {
   objectFilterKey,
   objectMapKey,
 } from "../utils/objectUtil";
-import { snakeCase } from "../utils/stringUtil";
+import { SnakeCase } from "../utils/stringUtil";
 
 const Profile = ({ navigation }: { navigation: any }) => {
   let apiProfileCollection = new ApiProfileCollection(
@@ -90,7 +90,7 @@ const Profile = ({ navigation }: { navigation: any }) => {
     // No permissions request is necessary for launching the image library
     let result: any = await PickImage();
 
-    const fileName = snakeCase(profileItem.display.name + " 1");
+    const fileName = SnakeCase(profileItem.display.name + " 1");
 
     if (!result.canceled) {
       updateImage(result.assets[0].uri, fileName);
@@ -99,7 +99,7 @@ const Profile = ({ navigation }: { navigation: any }) => {
 
   const dropImage = async (file: File) => {
     console.log("received dropping file", file);
-    const fileName = snakeCase(profileItem.display.name + " 1");
+    const fileName = SnakeCase(profileItem.display.name + " 1");
     updateImage("", fileName, file);
   };
 

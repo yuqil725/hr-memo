@@ -15,6 +15,7 @@ export interface ISearchCardScreen {
   selectedCard: ISearchCard;
   searchCard: ISearchCard[];
   longPress: boolean;
+  searchText: string;
   // it is string because we only need its value to be changed
   renderScreen?: number;
 }
