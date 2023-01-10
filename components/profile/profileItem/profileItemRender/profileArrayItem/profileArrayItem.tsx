@@ -1,5 +1,13 @@
 import React, { useRef, useState } from "react";
-import { Alert, Modal, Pressable, Text, TextInput, View } from "react-native";
+import {
+  Alert,
+  ListViewBase,
+  Modal,
+  Pressable,
+  Text,
+  TextInput,
+  View,
+} from "react-native";
 import { useSelector } from "react-redux";
 import styles, { WHITE } from "../../../../../assets/styles";
 import SProfileItem from "../../../../../assets/styles/profileItem";
@@ -17,6 +25,7 @@ import {
   AChangeProfileScreenActivity,
 } from "../../../../../redux_modules/action";
 import { pascalize } from "../../../../../utils/stringUtil";
+import { ProfileConfig } from "../../../profileConfig";
 
 export const ProfileArrayItem: React.FC<IProfileArrayItem> = ({
   value,
@@ -61,14 +70,29 @@ export const ProfileArrayItem: React.FC<IProfileArrayItem> = ({
     }
   }
 
+  function setInputTextRef(index: number) {
+    if (
+      profileScreenActivity.focusItem?.k == k &&
+      profileScreenActivity.focusItem.index == index
+    ) {
+      return inputTextRef;
+    } else if (!profileScreenActivity.focusItem || !inputTextRef.current) {
+      if (
+        k == ProfileConfig.DEFAULT_FOCUS.key &&
+        index == ProfileConfig.DEFAULT_FOCUS.index
+      ) {
+        console.log("Going default", k, index);
+        return inputTextRef;
+      }
+    } else {
+      return undefined;
+    }
+  }
+
   let profileScreenActivity: IProfileScreenActivity = useSelector(
     (state: RootState) => state.profileScreenActivity
   );
 
-  // let refs = [];
-  // for (let i = 0; i < value.length; i++) {
-  //   refs.push(useRef(null));
-  // }
   const inputTextRef: React.MutableRefObject<TextInput | null> = useRef(null);
 
   return (
@@ -127,16 +151,10 @@ export const ProfileArrayItem: React.FC<IProfileArrayItem> = ({
                 </View>
               </View>
             </Modal>
-
             <View style={SProfileItem.infoList}>
               <TextInput
-                ref={
-                  profileScreenActivity.focusItem?.k == k &&
-                  profileScreenActivity.focusItem.index == index
-                    ? inputTextRef
-                    : undefined
-                }
-                returnKeyType="next"
+                ref={setInputTextRef(index)}
+                returnKeyType="done"
                 keyboardType="default"
                 value={valueHandler(v)}
                 placeholder={"New field"}
@@ -155,6 +173,12 @@ export const ProfileArrayItem: React.FC<IProfileArrayItem> = ({
                     newArray = ["", ...newArray];
                   }
                   store.dispatch(AChangeDisplayProfile({ [k]: newArray }));
+                  // make sure inputTextRef is changed before calling focus
+                  setTimeout(() => {
+                    if (inputTextRef.current) {
+                      inputTextRef.current.focus();
+                    }
+                  }, 200);
                 }}
                 onFocus={() => {
                   store.dispatch(
@@ -178,12 +202,29 @@ export const ProfileArrayItem: React.FC<IProfileArrayItem> = ({
                   // delete focused empty item if not the first item
                   if (index > 0 && newArray[index].length == 0) {
                     newArray.splice(index, 1);
+                    store.dispatch(
+                      AChangeProfileScreenActivity({
+                        focusItem: {
+                          k: k,
+                          index: Math.min(
+                            Math.max(index - 1, 2),
+                            newArray.length - 1
+                          ),
+                        },
+                      })
+                    );
                   } else {
                     // add empty item after focused non-empty item
                     newArray.splice(index + 1, 0, "");
                     store.dispatch(
                       AChangeProfileScreenActivity({
-                        focusItem: { k: k, index: Math.max(index + 1, 2) },
+                        focusItem: {
+                          k: k,
+                          index: Math.min(
+                            Math.max(index + 1, 2),
+                            newArray.length - 1
+                          ),
+                        },
                       })
                     );
                   }
