@@ -1,4 +1,4 @@
-import React, { useEffect, useRef } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import {
   View,
   Text,
@@ -8,6 +8,7 @@ import {
   Modal,
   Alert,
   Pressable,
+  RefreshControl,
 } from "react-native";
 import { CardItem, Icon } from "../components";
 import styles, { DARK_GRAY, WHITE } from "../assets/styles";
@@ -42,6 +43,8 @@ const Search = ({ navigation }: { navigation: any }) => {
     (state: RootState) => state.searchCardScreen
   );
 
+  const [refreshing, setRefreshing] = useState<boolean>(false);
+
   useEffect(() => {
     let promise = apiProfileCollection.listDocument();
     promise.then(
@@ -70,6 +73,7 @@ const Search = ({ navigation }: { navigation: any }) => {
         console.error(error);
       }
     );
+    setRefreshing(false);
   }, [searchCardScreen.renderScreen]);
 
   const searchInputRef: React.MutableRefObject<TextInput | null> = useRef(null);
@@ -118,12 +122,21 @@ const Search = ({ navigation }: { navigation: any }) => {
               }
             }}
           ></TextInput>
-          {/* <TouchableOpacity>
-            <Icon name="ellipsis-vertical" color={DARK_GRAY} size={20} />
-          </TouchableOpacity> */}
         </View>
 
         <FlatList
+          keyboardDismissMode="on-drag"
+          refreshControl={
+            <RefreshControl
+              refreshing={refreshing}
+              onRefresh={() => {
+                store.dispatch(
+                  AChangeSearchCardScreen({ renderScreen: Math.random() })
+                );
+                setRefreshing(true);
+              }}
+            />
+          }
           numColumns={2}
           data={searchCardScreen.searchCard.filter((nc) => {
             const processedName = ProcessName(nc.name);

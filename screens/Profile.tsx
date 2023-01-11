@@ -1,6 +1,7 @@
-import React, { useEffect } from "react";
+import React, { useEffect, useState } from "react";
 import {
   KeyboardAvoidingView,
+  RefreshControl,
   ScrollView,
   TouchableOpacity,
   View,
@@ -103,6 +104,8 @@ const Profile = ({ navigation }: { navigation: any }) => {
     updateImage("", fileName, file);
   };
 
+  const [refreshing, setRefreshing] = useState<boolean>(false);
+
   useEffect(() => {
     if (
       searchCardScreen.selectedCard.documentId &&
@@ -136,7 +139,8 @@ const Profile = ({ navigation }: { navigation: any }) => {
         }
       );
     }
-  }, [searchCardScreen.selectedCard.documentId]);
+    setRefreshing(false);
+  }, [searchCardScreen.selectedCard.documentId, refreshing]);
 
   const ProfileImageCaller = () => {
     return (
@@ -166,7 +170,17 @@ const Profile = ({ navigation }: { navigation: any }) => {
         alignItems: "center",
       }}
     >
-      <ScrollView style={styles.containerProfile}>
+      <ScrollView
+        refreshControl={
+          <RefreshControl
+            refreshing={refreshing}
+            onRefresh={() => {
+              setRefreshing(true);
+            }}
+          />
+        }
+        style={styles.containerProfile}
+      >
         <GestureRecognizer
           style={{ flex: 1 }}
           onSwipeRight={() => {
