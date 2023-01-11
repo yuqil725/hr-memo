@@ -181,5 +181,6 @@ export default StyleSheet.create({
   },
   iconMenu: {
     alignItems: "center",
+    minWidth: 200,
   },
 });
