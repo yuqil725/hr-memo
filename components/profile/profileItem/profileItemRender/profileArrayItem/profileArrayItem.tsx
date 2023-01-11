@@ -188,12 +188,6 @@ export const ProfileArrayItem: React.FC<IProfileArrayItem> = ({
                     newArray = ["", ...newArray];
                   }
                   store.dispatch(AChangeDisplayProfile({ [k]: newArray }));
-                  // make sure inputTextRef is changed before calling focus
-                  // setTimeout(() => {
-                  //   if (inputTextRef.current) {
-                  //     inputTextRef.current.focus();
-                  //   }
-                  // }, 50);
                 }}
                 onFocus={() => {
                   store.dispatch(

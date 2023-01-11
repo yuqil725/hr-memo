@@ -47,7 +47,8 @@ export const ProfileItemRender = (
         <TextInput
           value={value}
           onBlur={(e) => {
-            let data = { [Pascalize(key)]: e.nativeEvent.text };
+            const text = e.nativeEvent.text.trimStart();
+            let data = { [Pascalize(key)]: text };
             apiPofile.updateDocument(profileItem.meta.documentId, data);
             // #TODO: here we only assumed search card are made of string fields in profile,
             // which can change in the future
@@ -55,7 +56,7 @@ export const ProfileItemRender = (
               store.dispatch(
                 AChangeSingleSearchCard({
                   documentId: profileItem.meta.documentId,
-                  [key]: e.nativeEvent.text,
+                  [key]: text,
                 })
               );
             }
