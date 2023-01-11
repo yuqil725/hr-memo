@@ -87,6 +87,7 @@ const Search = ({ navigation }: { navigation: any }) => {
             onLayout={() => {
               searchInputRef.current!.focus();
             }}
+            style={styles.title}
             value={searchCardScreen.searchText}
             onChangeText={(v) => {
               store.dispatch(AChangeSearchCardScreen({ searchText: v }));
@@ -127,7 +128,9 @@ const Search = ({ navigation }: { navigation: any }) => {
           data={searchCardScreen.searchCard.filter((nc) => {
             const processedName = ProcessName(nc.name);
             return processedName.startsWith(
-              searchCardScreen.searchText ? searchCardScreen.searchText : ""
+              searchCardScreen.searchText
+                ? searchCardScreen.searchText.toLowerCase()
+                : ""
             );
           })}
           keyExtractor={(item, index) => index.toString()}

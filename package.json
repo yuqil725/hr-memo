@@ -22,6 +22,7 @@
     "@types/react-native-swipe-gestures": "^1.0.4",
     "appwrite": "^10.1.0",
     "expo": "^47.0.9",
+    "expo-cli": "^6.1.0",
     "expo-image-picker": "^14.0.2",
     "expo-status-bar": "~1.4.2",
     "expo-updates": "~0.15.6",
