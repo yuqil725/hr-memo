@@ -48,7 +48,9 @@ const Todo = () => {
           if (todo.length > 0) {
             let date = "Unknown";
             if (todo.at(0) == "[") {
-              date = todo.slice(1, todo.indexOf("]"));
+              const todoStart = todo.indexOf("]");
+              date = todo.slice(1, todoStart);
+              todo = todo.slice(todoStart + 2);
             }
             todoList.date = date;
             const newItem = {
