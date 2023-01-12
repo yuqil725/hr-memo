@@ -1,37 +1,22 @@
+import { useAppState } from "@react-native-community/hooks";
 import React, { useEffect, useState } from "react";
-import {
-  FlatList,
-  Image,
-  ImageBackground,
-  ScrollView,
-  Text,
-  TouchableOpacity,
-  View,
-} from "react-native";
+import { ImageBackground, ScrollView } from "react-native";
+import { RefreshControl } from "react-native-gesture-handler";
 import { useSelector } from "react-redux";
-import DEMO from "../assets/data/demo";
-import styles, { DARK_GRAY } from "../assets/styles";
+import styles from "../assets/styles";
 import { ApiProfileCollection } from "../backend/appwrite/service/database/collection/profile";
-import { ApiProfileBucket } from "../backend/appwrite/service/storage/bucket/profile";
-import { Icon, ProfileOneLine } from "../components";
-import { Constants } from "../Constants";
 import {
-  ISTodoItem,
-  ITodoItem,
-  ITodoItems,
-  ITodoList,
-} from "../interfaces/todo";
+  convertTodoItemToTodoList,
+  saveTodo,
+  TodoSection,
+} from "../components/todo/todoSection";
+import { Constants } from "../Constants";
+import { ISTodoItem, ITodoItems, ITodoList } from "../interfaces/todo";
 import store, { RootState } from "../redux_modules";
-import { AChangeSingleTodoItem, AChangeTodo } from "../redux_modules/action";
-import { groupBy, objectFilterKey, objectMapKey } from "../utils/objectUtil";
+import { AChangeTodo } from "../redux_modules/action";
+import { objectFilterKey, objectMapKey } from "../utils/objectUtil";
 
 const Todo = ({ navigation }: { navigation: any }) => {
-  let apiProfileBucket = new ApiProfileBucket(
-    Constants.API_ENDPOINT,
-    Constants.P_NAMECARD_ID,
-    Constants.BKT_NAMECARD_ID
-  );
-
   let apiProfileCollection = new ApiProfileCollection(
     Constants.API_ENDPOINT,
     Constants.P_NAMECARD_ID,
@@ -45,109 +30,7 @@ const Todo = ({ navigation }: { navigation: any }) => {
 
   const [refreshing, setRefreshing] = useState<boolean>(false);
 
-  function removeTodoDate(todoStr: string) {
-    return todoStr.startsWith("-") || todoStr.startsWith("[")
-      ? todoStr.slice(todoStr.indexOf("]") + 2).trimStart()
-      : todoStr.trimStart();
-  }
-
-  function convertTodoItemToTodoList(todoItems: ITodoItems[]) {
-    let todoLists: any = [];
-    todoItems.map((i: ITodoItems) => {
-      let todoList: any = {};
-      if (i.todo.length > 0) {
-        i.todo.map((todo: string) => {
-          if (todo.length > 0) {
-            let date = "Unknown";
-            let disabled = false;
-            if (todo.at(0) == "[") {
-              const todoStart = todo.indexOf("]");
-              date = todo.slice(1, todoStart);
-            } else if (todo.at(0) == "-") {
-              const todoStart = todo.indexOf("]");
-              date = todo.slice(2, todoStart);
-              disabled = true;
-            }
-            todoList.date = date;
-            const newItem = {
-              documentId: i.documentId,
-              name: i.name,
-              todo: todo,
-              imagePath: i.imagePath ? i.imagePath.at(0) : undefined,
-              disabled: disabled,
-            };
-            if (!todoList.item || todoList.item.length == 0) {
-              todoList.item = [newItem];
-            } else {
-              todoList.item.push(newItem);
-            }
-          }
-        });
-        if (Object.keys(todoList).length == 2) {
-          todoLists.push(todoList);
-        }
-      }
-    });
-    todoLists = todoLists.sort((a: any, b: any) =>
-      // descending
-      b.date.localeCompare(a.date)
-    );
-
-    return todoLists;
-  }
-
-  function toggleTodo(
-    listIndex: number,
-    itemIndex: number,
-    todoItem: ITodoItem
-  ) {
-    const newItem = {
-      ...todoItem,
-      disabled: todoItem.disabled ? false : true,
-    };
-    store.dispatch(
-      AChangeSingleTodoItem({
-        listIndex: listIndex,
-        itemIndex: itemIndex,
-        item: newItem,
-      })
-    );
-  }
-
-  function saveTodo() {
-    const todos = todoLists
-      .map((todoList: ITodoList) => {
-        if (todoList.item) {
-          const newTodoItem = [...todoList.item];
-          return newTodoItem!.map((todoItemTmp: ITodoItem) => {
-            const newTodoItem = { ...todoItemTmp };
-            let lastDash = 0;
-            while (
-              newTodoItem.todo &&
-              newTodoItem.todo.slice(lastDash).startsWith("-")
-            ) {
-              lastDash += 1;
-              newTodoItem.todo = newTodoItem.todo.slice(lastDash);
-            }
-            if (newTodoItem.disabled) {
-              newTodoItem.todo = "-" + newTodoItem.todo;
-            }
-            return {
-              documentId: newTodoItem.documentId,
-              todo: newTodoItem.todo,
-            };
-          });
-        }
-      })
-      .flat();
-    let grouped = groupBy(todos, (todo: any) => todo.documentId);
-    console.log(todoLists, grouped);
-    Object.keys(grouped).map((k) => {
-      return apiProfileCollection.updateByDocumentId(k, {
-        Todo: grouped[k].map((i) => i?.todo),
-      });
-    });
-  }
+  const appState = useAppState();
 
   useEffect(() => {
     let promise = apiProfileCollection.listDocument();
@@ -164,60 +47,43 @@ const Todo = ({ navigation }: { navigation: any }) => {
         console.error(error);
       }
     );
+    setRefreshing(false);
   }, [refreshing]);
 
   useEffect(() => {
     // call when screen lose focuse
     const unsubscribe = navigation.addListener("blur", () => {
-      console.log("called");
       // The screen is focused
       // Call any action
-      saveTodo();
+      saveTodo(todoLists, apiProfileCollection);
     });
     return unsubscribe;
-  }, [navigation, todoLists]);
+  }, [navigation]);
+
+  useEffect(() => {
+    if (appState !== "active") {
+      saveTodo(todoLists, apiProfileCollection);
+    }
+  }, [appState]);
 
   return (
-    <ImageBackground
-      source={require("../assets/images/bg.png")}
-      style={styles.bg}
-    >
-      <View style={styles.containerMessages}>
-        <FlatList
-          data={todoLists}
-          keyExtractor={(item, index) => index.toString()}
-          renderItem={({ item: todoList, index: listIndex }) => (
-            <View>
-              <Text style={styles.title}>{todoList.date}</Text>
-              <FlatList
-                data={todoList.item}
-                keyExtractor={(item, index) => index.toString()}
-                renderItem={({ item: todoItem, index: itemIndex }) => (
-                  <ProfileOneLine
-                    image={
-                      todoItem.imagePath
-                        ? apiProfileBucket
-                            .getFilePreview(todoItem.imagePath)
-                            .toString()
-                        : undefined
-                    }
-                    name={todoItem.name}
-                    lastMessage={removeTodoDate(todoItem.todo)}
-                    disabled={todoItem.disabled}
-                    // TODO: still need to fix
-                    onPress={async () => {
-                      // setRefreshing(!refreshing);
-                      toggleTodo(listIndex, itemIndex, todoItem);
-                      // saveTodo();
-                    }}
-                  />
-                )}
-              />
-            </View>
-          )}
+    <ScrollView
+      refreshControl={
+        <RefreshControl
+          refreshing={refreshing}
+          onRefresh={() => {
+            setRefreshing(true);
+          }}
         />
-      </View>
-    </ImageBackground>
+      }
+    >
+      <ImageBackground
+        source={require("../assets/images/bg.png")}
+        style={styles.bg}
+      >
+        {TodoSection()}
+      </ImageBackground>
+    </ScrollView>
   );
 };
 

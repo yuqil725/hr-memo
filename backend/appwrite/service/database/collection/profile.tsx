@@ -15,7 +15,7 @@ export class ApiProfileCollection extends ApiCollection {
     return promise.then(
       (response: any) => {
         if (response.documents.length !== 1) {
-          console.error("Incorrect number of documents", response);
+          console.warn("Incorrect number of documents", response);
         } else {
           let doc = response.documents[0];
           const documentId = doc["$id"];
