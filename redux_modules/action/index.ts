@@ -42,3 +42,10 @@ export const AChangeTodo = (p: any) => {
     payload: p,
   };
 };
+
+export const AChangeSingleTodoItem = (p: any) => {
+  return {
+    type: "CHANGE_SINGLE_TODO_ITEM",
+    payload: p,
+  };
+};

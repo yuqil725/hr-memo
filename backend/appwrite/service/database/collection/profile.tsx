@@ -12,14 +12,14 @@ export class ApiProfileCollection extends ApiCollection {
 
   updateByDocumentId(documentId: string, data: any) {
     let promise = this.queryByDocumentId(documentId);
-    promise.then(
+    return promise.then(
       (response: any) => {
         if (response.documents.length !== 1) {
           console.error("Incorrect number of documents", response);
         } else {
           let doc = response.documents[0];
           const documentId = doc["$id"];
-          this.updateDocument(documentId, data);
+          return this.updateDocument(documentId, data);
         }
       },
       (error: any) => {

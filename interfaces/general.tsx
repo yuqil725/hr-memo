@@ -15,11 +15,13 @@ export type TIcon = {
   style?: any;
 };
 
-export type MessageT = {
+export interface IProfileOneLine {
   image: any;
   lastMessage: string;
   name: string;
-};
+  disabled?: boolean;
+  onPress?: any;
+}
 
 export type TTabBarIcon = {
   focused: boolean;
