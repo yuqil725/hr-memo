@@ -68,6 +68,11 @@ const Todo = () => {
         }
       }
     });
+    todoLists = todoLists.sort((a: any, b: any) =>
+      // descending
+      b.date.localeCompare(a.date)
+    );
+
     return todoLists;
   }
 
