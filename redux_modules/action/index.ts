@@ -34,3 +34,11 @@ export const AChangeSingleSearchCard = (p: any) => {
     payload: p,
   };
 };
+
+// Todo
+export const AChangeTodo = (p: any) => {
+  return {
+    type: "CHANGE_TODO",
+    payload: p,
+  };
+};

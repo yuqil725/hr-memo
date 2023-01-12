@@ -9,7 +9,7 @@ import { ApiAuth } from "./backend/appwrite/service/database/auth";
 import TabBarIcon from "./components/TabBarIcon";
 import { Constants } from "./Constants";
 import store from "./redux_modules";
-import { Profile, Search } from "./screens";
+import { Profile, Search, Todo } from "./screens";
 
 let apiAuth = new ApiAuth(Constants.API_ENDPOINT, Constants.P_NAMECARD_ID);
 
@@ -77,20 +77,6 @@ const App = () => (
                   }}
                 />
 
-                {/* <Tab.Screen
-              name="Chat"
-              component={Messages}
-              options={{
-                tabBarIcon: ({ focused }) => (
-                  <TabBarIcon
-                    focused={focused}
-                    iconName="chatbubble"
-                    text="Chat"
-                  />
-                ),
-              }}
-            /> */}
-
                 <Tab.Screen
                   name="Profile"
                   component={Profile}
@@ -100,6 +86,20 @@ const App = () => (
                         focused={focused}
                         iconName="person"
                         text="Profile"
+                      />
+                    ),
+                  }}
+                />
+
+                <Tab.Screen
+                  name="Todo"
+                  component={Todo}
+                  options={{
+                    tabBarIcon: ({ focused }) => (
+                      <TabBarIcon
+                        focused={focused}
+                        iconName="chatbubble"
+                        text="Todo"
                       />
                     ),
                   }}
