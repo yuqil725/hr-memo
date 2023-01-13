@@ -20,7 +20,14 @@ const ProfileOneLine = ({
       <Image source={image} style={styles.avatar} />
       <View>
         <Text>{name}</Text>
-        <Text style={styles.message}>{lastMessage}</Text>
+        <Text
+          style={{
+            ...styles.message,
+            textDecorationLine: disabled ? "line-through" : undefined,
+          }}
+        >
+          {lastMessage}
+        </Text>
       </View>
     </View>
   </TouchableOpacity>

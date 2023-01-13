@@ -1,6 +1,6 @@
 import React, { useState } from "react";
-import { FlatList, Text, View } from "react-native";
-import { Switch } from "react-native-gesture-handler";
+import { Text, View } from "react-native";
+import { ScrollView, Switch } from "react-native-gesture-handler";
 import { useSelector } from "react-redux";
 import styles, {
   DISABLE_COLOR,
@@ -14,10 +14,12 @@ import { ApiProfileCollection } from "../../backend/appwrite/service/database/co
 import { ApiProfileBucket } from "../../backend/appwrite/service/storage/bucket/profile";
 import { ProfileOneLine } from "../../components";
 import { Constants } from "../../Constants";
-import { ITodoItem, ITodoItems, ITodoList } from "../../interfaces/todo";
+import { ISProfileDisplayItem } from "../../interfaces/profile";
+import { ITodoItem, ITodoItems } from "../../interfaces/todo";
 import store, { RootState } from "../../redux_modules";
-import { AChangeSingleTodoItem } from "../../redux_modules/action";
-import { groupBy } from "../../utils/objectUtil";
+import { AChangeTodo } from "../../redux_modules/action";
+import { TsToStr } from "../../utils/dateUtil";
+import { objectFilterKey, objectMapKey } from "../../utils/objectUtil";
 
 function removeTodoDate(todoStr: string) {
   return todoStr.startsWith("-") || todoStr.startsWith("[")
@@ -25,58 +27,36 @@ function removeTodoDate(todoStr: string) {
     : todoStr.trimStart();
 }
 
-export function saveTodo(todoLists: ITodoList[], apiProfileCollection: any) {
-  const todos = todoLists
-    .map((todoList: ITodoList) => {
-      if (todoList.item) {
-        const newTodoItem = [...todoList.item];
-        return newTodoItem!.map((todoItemTmp: ITodoItem) => {
-          const newTodoItem = { ...todoItemTmp };
-          let lastDash = 0;
-          while (
-            newTodoItem.todo &&
-            newTodoItem.todo.slice(lastDash).startsWith("-")
-          ) {
-            lastDash += 1;
-            newTodoItem.todo = newTodoItem.todo.slice(lastDash);
-          }
-          if (newTodoItem.disabled) {
-            newTodoItem.todo = "-" + newTodoItem.todo;
-          }
-          return {
-            documentId: newTodoItem.documentId,
-            todo: newTodoItem.todo,
-          };
-        });
-      }
-    })
-    .flat();
-  let grouped = groupBy(todos, (todo: any) => (todo ? todo.documentId : ""));
-  Object.keys(grouped).map((k) => {
-    return apiProfileCollection.updateByDocumentId(k, {
-      Todo: grouped[k].map((i) => i?.todo),
-    });
-  });
+function updateTodo(todo: string, disabled: boolean) {
+  let lastDash = 0;
+  while (todo && todo.slice(lastDash).startsWith("-")) {
+    lastDash += 1;
+    todo = todo.slice(lastDash);
+  }
+  if (disabled) {
+    todo = "-" + todo;
+  }
+  return todo;
 }
 
 export function convertTodoItemToTodoList(todoItems: ITodoItems[]) {
-  let todoLists: any = [];
+  let todoList: any = {};
   todoItems.map((i: ITodoItems) => {
-    let todoList: any = {};
-    if (i.todo.length > 0) {
+    if (i.todo && i.todo.length > 0) {
       i.todo.map((todo: string) => {
-        if (todo.length > 0) {
+        if (todo && todo.length > 0) {
           let date = "Unknown";
           let disabled = false;
           if (todo.at(0) == "[") {
             const todoStart = todo.indexOf("]");
             date = todo.slice(1, todoStart);
           } else if (todo.at(0) == "-") {
-            const todoStart = todo.indexOf("]");
-            date = todo.slice(2, todoStart);
+            if (todo.at(1) == "[") {
+              const todoStart = todo.indexOf("]");
+              date = todo.slice(2, todoStart);
+            }
             disabled = true;
           }
-          todoList.date = date;
           const newItem = {
             documentId: i.documentId,
             name: i.name,
@@ -84,44 +64,74 @@ export function convertTodoItemToTodoList(todoItems: ITodoItems[]) {
             imagePath: i.imagePath ? i.imagePath.at(0) : undefined,
             disabled: disabled,
           };
-          if (!todoList.item || todoList.item.length == 0) {
-            todoList.item = [newItem];
+          if (!todoList[date] || todoList[date].length == 0) {
+            todoList[date] = [newItem];
           } else {
-            todoList.item.push(newItem);
+            todoList[date].push(newItem);
           }
         }
       });
-      if (Object.keys(todoList).length == 2) {
-        todoLists.push(todoList);
-      }
     }
   });
-  todoLists = todoLists.sort((a: any, b: any) =>
-    // descending
-    b.date.localeCompare(a.date)
-  );
+  const orderedTodoList = Object.keys(todoList)
+    .sort((a, b) => a.localeCompare(b))
+    .reduce((obj: any, key: any) => {
+      obj[key] = todoList[key];
+      return obj;
+    }, {});
 
-  return todoLists;
+  return orderedTodoList;
 }
 
-function toggleTodo(listIndex: number, itemIndex: number, todoItem: ITodoItem) {
-  const newItem = {
-    ...todoItem,
-    disabled: todoItem.disabled ? false : true,
-  };
-  return store.dispatch(
-    AChangeSingleTodoItem({
-      listIndex: listIndex,
-      itemIndex: itemIndex,
-      item: newItem,
+function toggleTodo(
+  date: string,
+  todoItem: ITodoItem[],
+  index: number,
+  apiProfileCollection: any
+) {
+  const newItem = todoItem.map((item, idx) => {
+    if (idx == index) {
+      let itemTmp = { ...item };
+      itemTmp.disabled = itemTmp.disabled ? false : true;
+      return itemTmp;
+    }
+    return { ...item };
+  });
+
+  store.dispatch(
+    AChangeTodo({
+      [date]: newItem,
     })
+  );
+
+  //   save this change to profile
+  let promise = apiProfileCollection.queryByDocumentId(
+    todoItem[index].documentId
+  );
+  promise.then(
+    function (response: any) {
+      let newDisplayState: any = objectMapKey(
+        objectFilterKey(response.documents[0], ISProfileDisplayItem),
+        ISProfileDisplayItem
+      );
+      const newTodo = newDisplayState.todo.map((todoStr: string) => {
+        if (todoItem[index].todo == todoStr) {
+          return updateTodo(todoItem[index].todo, !todoItem[index].disabled);
+        }
+        return todoStr;
+      });
+      apiProfileCollection.updateByDocumentId(todoItem[index].documentId, {
+        Todo: newTodo,
+      });
+    },
+    function (error: any) {
+      console.error(error);
+    }
   );
 }
 
 export const TodoSection = () => {
-  let todoLists: ITodoList[] = useSelector(
-    (state: RootState) => state.todoLists
-  );
+  let todoList: any = useSelector((state: RootState) => state.todoList);
   let apiProfileBucket = new ApiProfileBucket(
     Constants.API_ENDPOINT,
     Constants.P_NAMECARD_ID,
@@ -134,6 +144,8 @@ export const TodoSection = () => {
     Constants.DB_NAMECARD_ID,
     Constants.C_PROFILE_ID
   );
+
+  //   const todayStr = TsToStr(Date.now()).slice(1, -1);
 
   const [isEnabled, setIsEnabled] = useState(false);
   const toggleSwitch = () => setIsEnabled((previousState) => !previousState);
@@ -150,81 +162,39 @@ export const TodoSection = () => {
           value={isEnabled}
         />
       </View>
-      <FlatList
-        data={todoLists}
-        keyExtractor={(item, index) => index.toString()}
-        style={STodo.todoFlatList}
-        renderItem={({ item: todoList, index: listIndex }) => {
-          const data = todoList.item;
-          const dataFiltered = todoList.item?.filter((i) => !i.disabled);
-          const show =
-            (dataFiltered && dataFiltered.length > 0 && !isEnabled) ||
-            (isEnabled && data && data.length > 0);
-          return (
-            <View>
-              {show ? (
-                <React.Fragment>
-                  <Text style={styles.title}>{todoList.date}</Text>
-                  <FlatList
-                    data={data}
-                    keyExtractor={(item, index) => index.toString()}
-                    renderItem={({ item: todoItem, index: itemIndex }) => {
-                      return todoItem.disabled && !isEnabled ? (
-                        <></>
-                      ) : (
-                        <ProfileOneLine
-                          image={
-                            todoItem.imagePath
-                              ? apiProfileBucket
-                                  .getFilePreview(todoItem.imagePath)
-                                  .toString()
-                              : undefined
-                          }
-                          name={todoItem.name}
-                          lastMessage={removeTodoDate(todoItem.todo)}
-                          disabled={todoItem.disabled}
-                          // TODO: still need to fix
-                          onPress={async () => {
-                            const newTodoItem = toggleTodo(
-                              listIndex,
-                              itemIndex,
-                              todoItem
-                            ).payload.item;
-                            let newTodoLists = [...todoLists];
-                            let lastDash = 0;
-                            while (
-                              newTodoItem.todo &&
-                              newTodoItem.todo.slice(lastDash).startsWith("-")
-                            ) {
-                              lastDash += 1;
-                              newTodoItem.todo =
-                                newTodoItem.todo.slice(lastDash);
-                            }
-                            if (newTodoItem.disabled) {
-                              newTodoItem.todo = "-" + newTodoItem.todo;
-                            }
-
-                            newTodoLists[listIndex] = {
-                              date: newTodoLists[listIndex].date,
-                              item: [...newTodoLists[listIndex].item!],
-                            };
-                            newTodoLists[listIndex].item![itemIndex] = {
-                              ...newTodoLists[listIndex].item![itemIndex],
-                              ...newTodoItem,
-                            };
-                            console.log(newTodoItem, newTodoLists);
-                            saveTodo(newTodoLists, apiProfileCollection);
-                          }}
-                        />
-                      );
-                    }}
-                  />
-                </React.Fragment>
-              ) : undefined}
-            </View>
-          );
-        }}
-      />
+      <View>
+        <ScrollView style={STodo.todoFlatList}>
+          {Object.keys(todoList).map((k, index) => {
+            return (
+              <View key={index}>
+                <View>
+                  <Text style={styles.title}>{k}</Text>
+                </View>
+                {todoList[k].map((v: ITodoItem, index: number) => {
+                  return isEnabled || (!isEnabled && !v.disabled) ? (
+                    <ProfileOneLine
+                      key={index}
+                      image={
+                        v.imagePath
+                          ? apiProfileBucket
+                              .getFilePreview(v.imagePath)
+                              .toString()
+                          : undefined
+                      }
+                      name={v.name}
+                      lastMessage={removeTodoDate(v.todo)}
+                      disabled={v.disabled}
+                      onPress={() => {
+                        toggleTodo(k, todoList[k], index, apiProfileCollection);
+                      }}
+                    />
+                  ) : undefined;
+                })}
+              </View>
+            );
+          })}
+        </ScrollView>
+      </View>
     </View>
   );
 };

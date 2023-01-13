@@ -1,18 +1,15 @@
-import { useAppState } from "@react-native-community/hooks";
 import React, { useEffect, useState } from "react";
 import { ImageBackground, ScrollView } from "react-native";
 import { RefreshControl } from "react-native-gesture-handler";
-import { useSelector } from "react-redux";
 import styles from "../assets/styles";
 import { ApiProfileCollection } from "../backend/appwrite/service/database/collection/profile";
 import {
   convertTodoItemToTodoList,
-  saveTodo,
   TodoSection,
 } from "../components/todo/todoSection";
 import { Constants } from "../Constants";
-import { ISTodoItem, ITodoItems, ITodoList } from "../interfaces/todo";
-import store, { RootState } from "../redux_modules";
+import { ISTodoItem, ITodoItems } from "../interfaces/todo";
+import store from "../redux_modules";
 import { AChangeTodo } from "../redux_modules/action";
 import { objectFilterKey, objectMapKey } from "../utils/objectUtil";
 
@@ -24,13 +21,7 @@ const Todo = ({ navigation }: { navigation: any }) => {
     Constants.C_PROFILE_ID
   );
 
-  let todoLists: ITodoList[] = useSelector(
-    (state: RootState) => state.todoLists
-  );
-
   const [refreshing, setRefreshing] = useState<boolean>(false);
-
-  const appState = useAppState();
 
   useEffect(() => {
     let promise = apiProfileCollection.listDocument();
@@ -49,22 +40,6 @@ const Todo = ({ navigation }: { navigation: any }) => {
     );
     setRefreshing(false);
   }, [refreshing]);
-
-  useEffect(() => {
-    // call when screen lose focuse
-    const unsubscribe = navigation.addListener("blur", () => {
-      // The screen is focused
-      // Call any action
-      saveTodo(todoLists, apiProfileCollection);
-    });
-    return unsubscribe;
-  }, [navigation]);
-
-  useEffect(() => {
-    if (appState !== "active") {
-      saveTodo(todoLists, apiProfileCollection);
-    }
-  }, [appState]);
 
   return (
     <ScrollView

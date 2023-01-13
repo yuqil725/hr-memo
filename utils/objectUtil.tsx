@@ -41,7 +41,7 @@ export const objectAddOneStartEmptyStrToArray = (
 
 export const objectRemoveEmptyStr = (o: string[]) => {
   return o.filter((v: string) => {
-    return v.length > 0;
+    return v && v.length > 0;
   });
 };
 

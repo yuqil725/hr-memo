@@ -21,8 +21,3 @@ export interface ITodoItem {
   imagePath?: any;
   disabled?: boolean;
 }
-
-export interface ITodoList {
-  date: string;
-  item?: ITodoItem[];
-}
