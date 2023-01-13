@@ -11,7 +11,7 @@ export const BLACK = "#000000";
 export const ONLINE_STATUS = "#46A575";
 export const OFFLINE_STATUS = "#D04949";
 
-export const STAR_ACTIONS = "#FFA200";
+export const STAR_ACTIONS = "#CEDFD9";
 export const LIKE_ACTIONS = "#B644B2";
 export const DISLIKE_ACTIONS = "#363636";
 export const FLASH_ACTIONS = "#5028D7";

@@ -1,7 +1,7 @@
 import React from "react";
-import { Text, View, Image, TouchableOpacity } from "react-native";
-import { IProfileOneLine } from "../interfaces/general";
+import { Image, Text, TouchableOpacity, View } from "react-native";
 import styles from "../assets/styles";
+import { IProfileOneLine } from "../interfaces/general";
 
 const ProfileOneLine = ({
   image,

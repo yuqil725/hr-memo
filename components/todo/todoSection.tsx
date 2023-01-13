@@ -1,5 +1,5 @@
-import React, { useState } from "react";
-import { Text, View } from "react-native";
+import React, { MutableRefObject, useRef, useState } from "react";
+import { Text, TouchableOpacity, View } from "react-native";
 import { ScrollView, Switch } from "react-native-gesture-handler";
 import { useSelector } from "react-redux";
 import styles, {
@@ -7,6 +7,7 @@ import styles, {
   GRAY,
   PRIMARY_COLOR,
   SECONDARY_COLOR,
+  STAR_ACTIONS,
   WHITE,
 } from "../../assets/styles";
 import { STodo } from "../../assets/styles/todo";
@@ -74,7 +75,7 @@ export function convertTodoItemToTodoList(todoItems: ITodoItems[]) {
     }
   });
   const orderedTodoList = Object.keys(todoList)
-    .sort((a, b) => a.localeCompare(b))
+    .sort((a, b) => b.localeCompare(a))
     .reduce((obj: any, key: any) => {
       obj[key] = todoList[key];
       return obj;
@@ -130,7 +131,7 @@ function toggleTodo(
   );
 }
 
-export const TodoSection = () => {
+export const TodoSection = (refreshControl: any) => {
   let todoList: any = useSelector((state: RootState) => state.todoList);
   let apiProfileBucket = new ApiProfileBucket(
     Constants.API_ENDPOINT,
@@ -145,10 +146,14 @@ export const TodoSection = () => {
     Constants.C_PROFILE_ID
   );
 
-  //   const todayStr = TsToStr(Date.now()).slice(1, -1);
+  const todayStr = TsToStr(Date.now()).slice(1, -1);
 
   const [isEnabled, setIsEnabled] = useState(false);
   const toggleSwitch = () => setIsEnabled((previousState) => !previousState);
+
+  const [todayY, setTodayY] = useState(0);
+
+  const scrollRef: MutableRefObject<ScrollView | null> = useRef(null);
 
   return (
     <View style={STodo.todoSection}>
@@ -162,35 +167,66 @@ export const TodoSection = () => {
           value={isEnabled}
         />
       </View>
-      <View>
-        <ScrollView style={STodo.todoFlatList}>
+      <View style={{ flex: 1 }}>
+        <ScrollView
+          style={STodo.todoFlatList}
+          ref={scrollRef}
+          refreshControl={refreshControl}
+        >
           {Object.keys(todoList).map((k, index) => {
             return (
-              <View key={index}>
-                <View>
-                  <Text style={styles.title}>{k}</Text>
+              <TouchableOpacity
+                key={index}
+                onLayout={(event: any) => {
+                  const layout = event.nativeEvent.layout;
+                  if (k == todayStr) {
+                    setTodayY(layout.y);
+                    console.log("scroll to", layout.y);
+                    scrollRef.current!.scrollTo({
+                      y: layout.y,
+                      animated: true,
+                    });
+                  }
+                }}
+              >
+                <View
+                  style={
+                    todayStr == k
+                      ? STodo.highlightDateView
+                      : STodo.normalDateView
+                  }
+                >
+                  <View>
+                    <Text style={styles.title}>{k}</Text>
+                  </View>
+
+                  {todoList[k].map((v: ITodoItem, index: number) => {
+                    return isEnabled || (!isEnabled && !v.disabled) ? (
+                      <ProfileOneLine
+                        key={index}
+                        image={
+                          v.imagePath
+                            ? apiProfileBucket
+                                .getFilePreview(v.imagePath)
+                                .toString()
+                            : undefined
+                        }
+                        name={v.name}
+                        lastMessage={removeTodoDate(v.todo)}
+                        disabled={v.disabled}
+                        onPress={() => {
+                          toggleTodo(
+                            k,
+                            todoList[k],
+                            index,
+                            apiProfileCollection
+                          );
+                        }}
+                      />
+                    ) : undefined;
+                  })}
                 </View>
-                {todoList[k].map((v: ITodoItem, index: number) => {
-                  return isEnabled || (!isEnabled && !v.disabled) ? (
-                    <ProfileOneLine
-                      key={index}
-                      image={
-                        v.imagePath
-                          ? apiProfileBucket
-                              .getFilePreview(v.imagePath)
-                              .toString()
-                          : undefined
-                      }
-                      name={v.name}
-                      lastMessage={removeTodoDate(v.todo)}
-                      disabled={v.disabled}
-                      onPress={() => {
-                        toggleTodo(k, todoList[k], index, apiProfileCollection);
-                      }}
-                    />
-                  ) : undefined;
-                })}
-              </View>
+              </TouchableOpacity>
             );
           })}
         </ScrollView>

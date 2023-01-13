@@ -1,5 +1,5 @@
 import { StyleSheet } from "react-native";
-import { DIMENSION_WIDTH } from ".";
+import { DIMENSION_WIDTH, STAR_ACTIONS } from ".";
 
 export const STodo = StyleSheet.create({
   todoSection: {
@@ -21,5 +21,13 @@ export const STodo = StyleSheet.create({
   },
   todoFlatList: {
     paddingTop: 30,
+  },
+  highlightDateView: {
+    backgroundColor: STAR_ACTIONS,
+    borderRadius: 10,
+    padding: 10,
+  },
+  normalDateView: {
+    padding: 10,
   },
 });

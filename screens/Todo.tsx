@@ -42,23 +42,19 @@ const Todo = ({ navigation }: { navigation: any }) => {
   }, [refreshing]);
 
   return (
-    <ScrollView
-      refreshControl={
+    <ImageBackground
+      source={require("../assets/images/bg.png")}
+      style={styles.bg}
+    >
+      {TodoSection(
         <RefreshControl
           refreshing={refreshing}
           onRefresh={() => {
             setRefreshing(true);
           }}
         />
-      }
-    >
-      <ImageBackground
-        source={require("../assets/images/bg.png")}
-        style={styles.bg}
-      >
-        {TodoSection()}
-      </ImageBackground>
-    </ScrollView>
+      )}
+    </ImageBackground>
   );
 };
 
