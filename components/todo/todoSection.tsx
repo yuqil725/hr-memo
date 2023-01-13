@@ -181,7 +181,6 @@ export const TodoSection = (refreshControl: any) => {
                   const layout = event.nativeEvent.layout;
                   if (k == todayStr) {
                     setTodayY(layout.y);
-                    console.log("scroll to", layout.y);
                     scrollRef.current!.scrollTo({
                       y: layout.y,
                       animated: true,

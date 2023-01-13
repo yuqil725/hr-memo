@@ -17,7 +17,7 @@ const ProfileOneLine = ({
         opacity: disabled ? 0.5 : undefined,
       }}
     >
-      <Image source={image} style={styles.avatar} />
+      <Image source={{ uri: image }} style={styles.avatar} />
       <View>
         <Text>{name}</Text>
         <Text
