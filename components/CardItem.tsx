@@ -25,9 +25,8 @@ const CardItem = (props: ISearchCard) => {
 
   const imageStyle = {
     borderRadius: 8,
-    width: fullWidth / 2 - 30,
-    height: 170,
-    margin: 0,
+    width: props.oneline ? 40 : fullWidth / 2 - 30,
+    height: props.oneline ? 40 : 170,
   };
   const nameStyle = [
     {
@@ -156,16 +155,23 @@ const CardItem = (props: ISearchCard) => {
             >
               <Ionicons
                 name="ios-person-add"
-                size={120}
+                size={props.oneline ? 40 : 120}
                 color={GRAY}
-                style={{ width: 120 }}
+                // style={{ width: "100%" }}
               />
             </View>
           </TouchableOpacity>
         ) : undefined}
 
         {/* NAME */}
-        <Text style={nameStyle}>{props.name}</Text>
+        <View
+          style={{
+            ...SCardItem.nameView,
+            paddingLeft: props.oneline ? 10 : undefined,
+          }}
+        >
+          <Text style={nameStyle}>{props.name}</Text>
+        </View>
       </View>
 
       {/* Remove Icon */}

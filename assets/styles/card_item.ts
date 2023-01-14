@@ -15,12 +15,13 @@ export const SCardItem = StyleSheet.create({
     backgroundColor: WHITE,
     borderRadius: 8,
     alignItems: "center",
-    margin: 10,
+    margin: 0,
     elevation: 1,
     shadowOpacity: 0.05,
     shadowRadius: 10,
     shadowColor: BLACK,
     shadowOffset: { height: 0, width: 0 },
+    flexDirection: "row",
   },
   matchesCardItem: {
     marginTop: -35,
@@ -91,5 +92,8 @@ export const SCardItem = StyleSheet.create({
     shadowRadius: 20,
     shadowColor: DARK_GRAY,
     shadowOffset: { height: 10, width: 0 },
+  },
+  nameView: {
+    flex: 1,
   },
 });

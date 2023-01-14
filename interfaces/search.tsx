@@ -9,6 +9,7 @@ export interface ISearchCard {
   name: string;
   documentId: string;
   imagePath?: any;
+  oneline?: boolean;
 }
 
 export interface ISearchCardScreen {

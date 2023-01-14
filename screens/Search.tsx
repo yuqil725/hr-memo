@@ -1,20 +1,24 @@
+import { useFocusEffect } from "@react-navigation/native";
 import React, { useCallback, useRef, useState } from "react";
 import {
-  View,
-  Text,
-  TouchableOpacity,
-  ImageBackground,
-  FlatList,
-  Modal,
   Alert,
+  FlatList,
+  ImageBackground,
+  Modal,
   Pressable,
   RefreshControl,
+  SectionList,
+  Text,
+  TouchableOpacity,
+  View,
 } from "react-native";
-import { CardItem } from "../components";
+import { TextInput } from "react-native-gesture-handler";
+import { useSelector } from "react-redux";
 import styles, { WHITE } from "../assets/styles";
+import { SSearch } from "../assets/styles/search";
 import { ApiProfileCollection } from "../backend/appwrite/service/database/collection/profile";
+import { CardItem } from "../components";
 import { Constants } from "../Constants";
-import { objectFilterKey, objectMapKey } from "../utils/objectUtil";
 import {
   ISearchCard,
   ISearchCardScreen,
@@ -22,15 +26,12 @@ import {
 } from "../interfaces/search";
 import store, { RootState } from "../redux_modules";
 import { AChangeSearchCardScreen } from "../redux_modules/action";
-import { useSelector } from "react-redux";
-import { SSearch } from "../assets/styles/search";
 import {
   EMPTY_CARD,
   NEW_CARD,
 } from "../redux_modules/reducer/change_search_card_screen";
-import { TextInput } from "react-native-gesture-handler";
+import { objectFilterKey, objectMapKey } from "../utils/objectUtil";
 import { ProcessName } from "../utils/stringUtil";
-import { useFocusEffect } from "@react-navigation/native";
 
 const Search = ({ navigation }: { navigation: any }) => {
   let apiProfileCollection = new ApiProfileCollection(
@@ -46,18 +47,40 @@ const Search = ({ navigation }: { navigation: any }) => {
 
   const [refreshing, setRefreshing] = useState<boolean>(false);
 
+  function namecardArrayToSection(namecardArray: ISearchCard[]) {
+    const namecardObject = namecardArray.reduce((acc: any, nc: any) => {
+      const processedName = ProcessName(nc.name);
+      processedName.startsWith(
+        searchCardScreen.searchText
+          ? searchCardScreen.searchText.toLowerCase()
+          : " "
+      );
+      const firstLetter = processedName.at(0) ? processedName.at(0) : "";
+      acc[firstLetter] = acc[firstLetter] || [];
+      acc[firstLetter].push(nc);
+      return acc;
+    }, {});
+    return Object.keys(namecardObject).map((k) => {
+      return { title: k.toUpperCase(), data: namecardObject[k] };
+    });
+  }
+
   useFocusEffect(
     useCallback(() => {
       let promise = apiProfileCollection.listDocument();
       promise.then(
         function (response: any) {
           let newSearchState = {
-            searchCard: response.documents.map((e: ISearchCard) => {
-              return objectMapKey(
-                objectFilterKey(e, ISSearchCard),
-                ISSearchCard
-              );
-            }),
+            searchCard: response.documents
+              .map((e: ISearchCard) => {
+                return objectMapKey(
+                  objectFilterKey(e, ISSearchCard),
+                  ISSearchCard
+                );
+              })
+              .sort((a: ISearchCard, b: ISearchCard) => {
+                return ProcessName(a.name) < ProcessName(b.name) ? -1 : 1;
+              }),
             selectedCard: EMPTY_CARD,
           };
           if (
@@ -72,7 +95,7 @@ const Search = ({ navigation }: { navigation: any }) => {
               newSearchState.selectedCard = newSelectedCard.at(0);
             }
           }
-          newSearchState.searchCard.push(NEW_CARD);
+          newSearchState.searchCard.unshift(NEW_CARD);
           console.log("set search state", newSearchState);
           store.dispatch(AChangeSearchCardScreen(newSearchState));
         },
@@ -132,7 +155,7 @@ const Search = ({ navigation }: { navigation: any }) => {
           ></TextInput>
         </View>
 
-        <FlatList
+        <SectionList
           keyboardDismissMode="on-drag"
           refreshControl={
             <RefreshControl
@@ -145,15 +168,10 @@ const Search = ({ navigation }: { navigation: any }) => {
               }}
             />
           }
-          numColumns={2}
-          data={searchCardScreen.searchCard.filter((nc) => {
-            const processedName = ProcessName(nc.name);
-            return processedName.startsWith(
-              searchCardScreen.searchText
-                ? searchCardScreen.searchText.toLowerCase()
-                : ""
-            );
-          })}
+          sections={namecardArrayToSection(searchCardScreen.searchCard)}
+          renderSectionHeader={({ section: { title } }) => (
+            <Text style={styles.title}>{title}</Text>
+          )}
           keyExtractor={(item, index) => index.toString()}
           renderItem={({ item }) => (
             <TouchableOpacity
@@ -174,8 +192,9 @@ const Search = ({ navigation }: { navigation: any }) => {
                   })
                 );
               }}
+              style={{ flex: 1 }}
             >
-              <CardItem {...item} />
+              <CardItem {...item} oneline />
               <View style={SSearch.centeredModel}>
                 <Modal
                   animationType="slide"
