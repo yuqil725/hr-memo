@@ -12,12 +12,6 @@ import { Constants } from "./Constants";
 import store, { RootState } from "./redux_modules";
 import { Login, Profile, Search, Todo } from "./screens";
 
-const isIOS = Platform.OS == "ios";
-if (isIOS) {
-  let apiAuth = new ApiAuth(Constants.API_ENDPOINT, Constants.P_NAMECARD_ID);
-  apiAuth.createSessionIfNoLogin(Constants.EMAIL, Constants.PASSWORD);
-}
-
 const App = () => {
   const Stack = createStackNavigator();
   const Tab = createBottomTabNavigator();
@@ -31,6 +25,17 @@ const App = () => {
             options={{ headerShown: false, animationEnabled: false }}
           >
             {() => {
+              const isIOS = Platform.OS == "ios";
+              if (isIOS) {
+                let apiAuth = new ApiAuth(
+                  Constants.API_ENDPOINT,
+                  Constants.P_NAMECARD_ID
+                );
+                apiAuth.createSessionIfNoLogin(
+                  Constants.EMAIL,
+                  Constants.PASSWORD
+                );
+              }
               const session = useSelector((state: RootState) => state.session);
 
               return (
