@@ -1,6 +1,6 @@
 import { Platform, Vibration } from "react-native";
 
-export const vibrate = () => {
+function vibrate() {
   const timeout = 500;
   if (Platform.OS === "ios") {
     // this logic works in android too. you could omit the else statement
@@ -10,4 +10,6 @@ export const vibrate = () => {
   } else {
     Vibration.vibrate(timeout);
   }
-};
+}
+
+export default vibrate;

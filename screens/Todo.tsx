@@ -1,5 +1,6 @@
-import React, { useEffect, useState } from "react";
-import { ImageBackground, ScrollView } from "react-native";
+import { useFocusEffect } from "@react-navigation/native";
+import React, { useCallback, useState } from "react";
+import { ImageBackground } from "react-native";
 import { RefreshControl } from "react-native-gesture-handler";
 import styles from "../assets/styles";
 import { ApiProfileCollection } from "../backend/appwrite/service/database/collection/profile";
@@ -23,23 +24,26 @@ const Todo = ({ navigation }: { navigation: any }) => {
 
   const [refreshing, setRefreshing] = useState<boolean>(false);
 
-  useEffect(() => {
-    let promise = apiProfileCollection.listDocument();
-    promise.then(
-      function (response: any) {
-        let newTodoItems: ITodoItems[] = response.documents.map(
-          (e: ITodoItems) => {
-            return objectMapKey(objectFilterKey(e, ISTodoItem), ISTodoItem);
-          }
-        );
-        store.dispatch(AChangeTodo(convertTodoItemToTodoList(newTodoItems)));
-      },
-      function (error: any) {
-        console.error(error);
-      }
-    );
-    setRefreshing(false);
-  }, [refreshing]);
+  useFocusEffect(
+    useCallback(() => {
+      let promise = apiProfileCollection.listDocument();
+      promise.then(
+        function (response: any) {
+          let newTodoItems: ITodoItems[] = response.documents.map(
+            (e: ITodoItems) => {
+              return objectMapKey(objectFilterKey(e, ISTodoItem), ISTodoItem);
+            }
+          );
+          store.dispatch(AChangeTodo(convertTodoItemToTodoList(newTodoItems)));
+        },
+        function (error: any) {
+          console.error(error);
+        }
+      );
+      setRefreshing(false);
+      return;
+    }, [refreshing])
+  );
 
   return (
     <ImageBackground

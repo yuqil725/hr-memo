@@ -8,7 +8,7 @@ import { SSwipeableItem } from "../assets/styles/swipeableItem";
 import { MaterialCommunityIcons } from "@expo/vector-icons";
 import { Entypo } from "@expo/vector-icons";
 import { ISwipeableItem } from "../interfaces/profile";
-import { vibrate } from "./Vibrate";
+import vibrate from "./common/vibrate";
 
 export default class SwipeableItem extends Component<
   PropsWithChildren<ISwipeableItem>
@@ -68,19 +68,9 @@ export default class SwipeableItem extends Component<
     );
   };
 
-  private swipeableRow?: Swipeable;
-
-  private updateRef = (ref: Swipeable) => {
-    this.swipeableRow = ref;
-  };
-  private close = () => {
-    this.swipeableRow?.close();
-  };
-
   render() {
     return (
       <Swipeable
-        ref={this.updateRef}
         friction={2}
         enableTrackpadTwoFingerGesture
         leftThreshold={100000}

@@ -28,3 +28,10 @@ export type TTabBarIcon = {
   iconName: any;
   text: string;
 };
+
+// checkbox
+export interface ICheckbox {
+  checked?: boolean;
+  onChecked?: any;
+  textInputProps?: any;
+}

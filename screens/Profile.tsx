@@ -1,4 +1,5 @@
-import React, { useEffect, useState } from "react";
+import { useFocusEffect } from "@react-navigation/native";
+import React, { useCallback, useEffect, useState } from "react";
 import {
   KeyboardAvoidingView,
   RefreshControl,
@@ -106,41 +107,43 @@ const Profile = ({ navigation }: { navigation: any }) => {
 
   const [refreshing, setRefreshing] = useState<boolean>(false);
 
-  useEffect(() => {
-    if (
-      searchCardScreen.selectedCard.documentId &&
-      searchCardScreen.selectedCard.documentId !== EMPTY_CARD.documentId &&
-      searchCardScreen.selectedCard.documentId !== NEW_CARD.documentId
-    ) {
-      let promise = apiProfileCollection.queryByDocumentId(
-        searchCardScreen.selectedCard.documentId
-      );
-      promise.then(
-        function (response: any) {
-          let newDisplayState = objectAddOneStartEmptyStrToArray(
-            objectMapKey(
-              objectFilterKey(response.documents[0], ISProfileDisplayItem),
-              ISProfileDisplayItem
-            )
-          );
-          let newMetaState = objectMapKey(
-            objectFilterKey(response.documents[0], ISProfileMetaItem),
-            ISProfileMetaItem
-          );
-          console.log("set profile state", {
-            display: newDisplayState,
-            meta: newMetaState,
-          });
-          store.dispatch(AChangeDisplayProfile(newDisplayState));
-          store.dispatch(AChangeMetaProfile(newMetaState));
-        },
-        function (error: any) {
-          console.error(error);
-        }
-      );
-    }
-    setRefreshing(false);
-  }, [searchCardScreen.selectedCard.documentId, refreshing]);
+  useFocusEffect(
+    useCallback(() => {
+      if (
+        searchCardScreen.selectedCard.documentId &&
+        searchCardScreen.selectedCard.documentId !== EMPTY_CARD.documentId &&
+        searchCardScreen.selectedCard.documentId !== NEW_CARD.documentId
+      ) {
+        let promise = apiProfileCollection.queryByDocumentId(
+          searchCardScreen.selectedCard.documentId
+        );
+        promise.then(
+          function (response: any) {
+            let newDisplayState = objectAddOneStartEmptyStrToArray(
+              objectMapKey(
+                objectFilterKey(response.documents[0], ISProfileDisplayItem),
+                ISProfileDisplayItem
+              )
+            );
+            let newMetaState = objectMapKey(
+              objectFilterKey(response.documents[0], ISProfileMetaItem),
+              ISProfileMetaItem
+            );
+            console.log("set profile state", {
+              display: newDisplayState,
+              meta: newMetaState,
+            });
+            store.dispatch(AChangeDisplayProfile(newDisplayState));
+            store.dispatch(AChangeMetaProfile(newMetaState));
+          },
+          function (error: any) {
+            console.error(error);
+          }
+        );
+      }
+      setRefreshing(false);
+    }, [searchCardScreen.selectedCard.documentId, refreshing])
+  );
 
   const ProfileImageCaller = () => {
     return (

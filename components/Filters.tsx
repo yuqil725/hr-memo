@@ -1,6 +1,6 @@
 import React from "react";
 import { Text, TouchableOpacity } from "react-native";
-import Icon from "./Icon";
+import Icon from "./common/Icon";
 import styles, { DARK_GRAY } from "../assets/styles";
 
 const Filters = () => (

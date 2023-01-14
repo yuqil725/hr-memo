@@ -20,6 +20,7 @@ import {
 import { TsToStr } from "../../../utils/dateUtil";
 import { Pascalize } from "../../../utils/stringUtil";
 import { ProfileArrayItem } from "./profileItemRender/profileArrayItem/profileArrayItem";
+import { ProfileTodoArrayItem } from "./profileItemRender/profileTodoItem/profileTodoArrayItem";
 
 export const ProfileItemRender = (
   profileItem: IProfileItem,
@@ -123,6 +124,16 @@ export const ProfileItemRender = (
         }
         case ISProfileDisplayItem.ImagePath: {
           return;
+        }
+        case ISProfileDisplayItem.Todo: {
+          return (
+            <ProfileTodoArrayItem
+              value={value}
+              valueHandler={addDateString}
+              k={key}
+              profileItem={profileItem}
+            />
+          );
         }
         default: {
           // default is string[]

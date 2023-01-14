@@ -1,7 +1,6 @@
 import React, { useRef, useState } from "react";
 import {
   Alert,
-  ListViewBase,
   Modal,
   NativeSyntheticEvent,
   Pressable,
@@ -18,7 +17,6 @@ import { ApiProfileCollection } from "../../../../../backend/appwrite/service/da
 import { Constants } from "../../../../../Constants";
 import {
   IProfileArrayItem,
-  IProfileDisplayItem,
   IProfileScreenActivity,
   ISProfileDisplayItem,
 } from "../../../../../interfaces/profile";
@@ -27,10 +25,11 @@ import {
   AChangeDisplayProfile,
   AChangeProfileScreenActivity,
 } from "../../../../../redux_modules/action";
-import { Pascalize } from "../../../../../utils/stringUtil";
+import { Pascalize, updateTodo } from "../../../../../utils/stringUtil";
+import Checkbox from "../../../../common/checkbox";
 import { ProfileConfig } from "../../../profileConfig";
 
-export const ProfileArrayItem: React.FC<IProfileArrayItem> = ({
+export const ProfileTodoArrayItem: React.FC<IProfileArrayItem> = ({
   value,
   valueHandler,
   k,
@@ -84,6 +83,7 @@ export const ProfileArrayItem: React.FC<IProfileArrayItem> = ({
   return (
     <>
       {value.map((v: any, index: any) => {
+        const checked = v && v.startsWith("-");
         return (
           <React.Fragment key={index}>
             <Modal
@@ -138,103 +138,121 @@ export const ProfileArrayItem: React.FC<IProfileArrayItem> = ({
               </View>
             </Modal>
             <View style={SProfileItem.infoList}>
-              <TextInput
-                ref={setInputTextRef(index)}
-                returnKeyType="done"
-                keyboardType="default"
-                value={valueHandler(v)}
-                placeholder={"New field"}
-                placeholderTextColor="#E6E6E6"
-                onBlur={(e) => {
+              <Checkbox
+                checked={checked}
+                onChecked={() => {
+                  const newTodo = updateTodo(v, !checked);
                   let newArray = [...value];
-                  newArray[index] = e.nativeEvent.text;
-                  // delete empty item if not the first item
+                  newArray[index] = newTodo;
+                  store.dispatch(AChangeDisplayProfile({ [k]: newArray }));
                   if (index > 0 && newArray[index].length == 0) {
                     newArray.splice(index, 1);
                   }
                   let data = { [Pascalize(k)]: newArray };
                   apiPofile.updateDocument(profileItem.meta.documentId, data);
-                  // add empty first line if it becomes none empty
-                  if (newArray && newArray.length > 0 && newArray.at(0) != "") {
-                    newArray = ["", ...newArray];
-                  }
-                  store.dispatch(AChangeDisplayProfile({ [k]: newArray }));
                 }}
-                onFocus={() => {
-                  store.dispatch(
-                    AChangeProfileScreenActivity({
-                      focusItem: { k: k, index: index },
-                    })
-                  );
-                }}
-                onKeyPress={(
-                  e: NativeSyntheticEvent<TextInputKeyPressEventData>
-                ) => {
-                  switch (e.nativeEvent.key) {
-                    case "ArrowDown":
-                      store.dispatch(
-                        AChangeProfileScreenActivity({
-                          focusItem: moveFocusItem(k, index, 1),
-                        })
-                      );
-                      setTimeout(() => {
-                        if (inputTextRef.current) {
-                          inputTextRef.current.focus();
-                        }
-                      }, 50);
-                      return;
-                    case "ArrowUp":
+                textInputProps={{
+                  ref: setInputTextRef(index),
+                  returnKeyType: "done",
+                  keyboardType: "default",
+                  value: valueHandler(updateTodo(v, false)),
+                  placeholder: "New field",
+                  placeholderTextColor: "#E6E6E6",
+                  onBlur: (e: any) => {
+                    let newArray = [...value];
+                    newArray[index] = e.nativeEvent.text;
+                    // delete empty item if not the first item
+                    if (index > 0 && newArray[index].length == 0) {
+                      newArray.splice(index, 1);
+                    }
+                    let data = { [Pascalize(k)]: newArray };
+                    apiPofile.updateDocument(profileItem.meta.documentId, data);
+                    // add empty first line if it becomes none empty
+                    if (
+                      newArray &&
+                      newArray.length > 0 &&
+                      newArray.at(0) != ""
+                    ) {
+                      newArray = ["", ...newArray];
+                    }
+                    store.dispatch(AChangeDisplayProfile({ [k]: newArray }));
+                  },
+                  onFocus: () => {
+                    store.dispatch(
+                      AChangeProfileScreenActivity({
+                        focusItem: { k: k, index: index },
+                      })
+                    );
+                  },
+                  onKeyPress: (
+                    e: NativeSyntheticEvent<TextInputKeyPressEventData>
+                  ) => {
+                    switch (e.nativeEvent.key) {
+                      case "ArrowDown":
+                        store.dispatch(
+                          AChangeProfileScreenActivity({
+                            focusItem: moveFocusItem(k, index, 1),
+                          })
+                        );
+                        setTimeout(() => {
+                          if (inputTextRef.current) {
+                            inputTextRef.current.focus();
+                          }
+                        }, 50);
+                        return;
+                      case "ArrowUp":
+                        store.dispatch(
+                          AChangeProfileScreenActivity({
+                            focusItem: moveFocusItem(k, index, -1),
+                          })
+                        );
+                        setTimeout(() => {
+                          if (inputTextRef.current) {
+                            inputTextRef.current.focus();
+                          }
+                        }, 50);
+                        return;
+                    }
+                  },
+                  onLayout: () => {
+                    if (inputTextRef.current) {
+                      inputTextRef.current.focus();
+                    }
+                  },
+                  onChangeText: (newValue: any) => {
+                    let newArray = [...value];
+                    newArray[index] = newValue;
+                    store.dispatch(AChangeDisplayProfile({ [k]: newArray }));
+                  },
+                  onSubmitEditing: (event: any) => {
+                    let newArray = [...value];
+                    // delete focused empty item if not the first item
+                    if (index > 0 && newArray[index].length == 0) {
+                      newArray.splice(index, 1);
                       store.dispatch(
                         AChangeProfileScreenActivity({
                           focusItem: moveFocusItem(k, index, -1),
                         })
                       );
-                      setTimeout(() => {
-                        if (inputTextRef.current) {
-                          inputTextRef.current.focus();
-                        }
-                      }, 50);
-                      return;
-                  }
+                    } else {
+                      // add empty item after focused non-empty item
+                      newArray.splice(index + 1, 0, "");
+                      store.dispatch(
+                        AChangeProfileScreenActivity({
+                          focusItem: {
+                            k: k,
+                            index: Math.min(
+                              Math.max(index + 1, 2),
+                              newArray.length - 1
+                            ),
+                          },
+                        })
+                      );
+                    }
+                    store.dispatch(AChangeDisplayProfile({ [k]: newArray }));
+                  },
+                  style: SProfileItem.infoContent,
                 }}
-                onLayout={() => {
-                  if (inputTextRef.current) {
-                    inputTextRef.current.focus();
-                  }
-                }}
-                onChangeText={(newValue) => {
-                  let newArray = [...value];
-                  newArray[index] = newValue;
-                  store.dispatch(AChangeDisplayProfile({ [k]: newArray }));
-                }}
-                onSubmitEditing={(event) => {
-                  let newArray = [...value];
-                  // delete focused empty item if not the first item
-                  if (index > 0 && newArray[index].length == 0) {
-                    newArray.splice(index, 1);
-                    store.dispatch(
-                      AChangeProfileScreenActivity({
-                        focusItem: moveFocusItem(k, index, -1),
-                      })
-                    );
-                  } else {
-                    // add empty item after focused non-empty item
-                    newArray.splice(index + 1, 0, "");
-                    store.dispatch(
-                      AChangeProfileScreenActivity({
-                        focusItem: {
-                          k: k,
-                          index: Math.min(
-                            Math.max(index + 1, 2),
-                            newArray.length - 1
-                          ),
-                        },
-                      })
-                    );
-                  }
-                  store.dispatch(AChangeDisplayProfile({ [k]: newArray }));
-                }}
-                style={SProfileItem.infoContent}
               />
             </View>
           </React.Fragment>

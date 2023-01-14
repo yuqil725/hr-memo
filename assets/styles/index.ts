@@ -183,4 +183,29 @@ export default StyleSheet.create({
     alignItems: "center",
     minWidth: 200,
   },
+
+  // Checkbox
+  checkboxBase: {
+    width: 24,
+    height: 24,
+    justifyContent: "center",
+    alignItems: "center",
+    borderRadius: 4,
+    borderWidth: 2,
+    borderColor: BLACK,
+    backgroundColor: "transparent",
+    marginRight: 12,
+  },
+  checkIcon: {
+    alignSelf: "center",
+    color: BLACK,
+  },
+  checkboxChecked: {
+    borderWidth: 2,
+    borderColor: BLACK,
+  },
+  checkboxView: {
+    flex: 1,
+    flexDirection: "row",
+  },
 });

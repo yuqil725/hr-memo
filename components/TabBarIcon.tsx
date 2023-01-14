@@ -1,6 +1,6 @@
 import React, { useEffect } from "react";
 import { Text, View } from "react-native";
-import Icon from "./Icon";
+import Icon from "./common/Icon";
 import styles, {
   DARK_GRAY,
   DISABLE_COLOR,

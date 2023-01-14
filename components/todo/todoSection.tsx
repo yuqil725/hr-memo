@@ -7,7 +7,6 @@ import styles, {
   GRAY,
   PRIMARY_COLOR,
   SECONDARY_COLOR,
-  STAR_ACTIONS,
   WHITE,
 } from "../../assets/styles";
 import { STodo } from "../../assets/styles/todo";
@@ -21,24 +20,7 @@ import store, { RootState } from "../../redux_modules";
 import { AChangeTodo } from "../../redux_modules/action";
 import { TsToStr } from "../../utils/dateUtil";
 import { objectFilterKey, objectMapKey } from "../../utils/objectUtil";
-
-function removeTodoDate(todoStr: string) {
-  return todoStr.startsWith("-") || todoStr.startsWith("[")
-    ? todoStr.slice(todoStr.indexOf("]") + 2).trimStart()
-    : todoStr.trimStart();
-}
-
-function updateTodo(todo: string, disabled: boolean) {
-  let lastDash = 0;
-  while (todo && todo.slice(lastDash).startsWith("-")) {
-    lastDash += 1;
-    todo = todo.slice(lastDash);
-  }
-  if (disabled) {
-    todo = "-" + todo;
-  }
-  return todo;
-}
+import { removeTodoDate, updateTodo } from "../../utils/stringUtil";
 
 export function convertTodoItemToTodoList(todoItems: ITodoItems[]) {
   let todoList: any = {};

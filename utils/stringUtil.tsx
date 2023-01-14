@@ -24,3 +24,21 @@ export const ProcessName = (name: string) => {
   name = name.trimStart();
   return /^[A-Za-z0-9 ]*$/.test(name) ? name.toLowerCase() : ToPinYinName(name);
 };
+
+export function removeTodoDate(todoStr: string) {
+  return todoStr.startsWith("-") || todoStr.startsWith("[")
+    ? todoStr.slice(todoStr.indexOf("]") + 2).trimStart()
+    : todoStr.trimStart();
+}
+
+export function updateTodo(todo: string, disabled: boolean) {
+  let lastDash = 0;
+  while (todo && todo.slice(lastDash).startsWith("-")) {
+    lastDash += 1;
+    todo = todo.slice(lastDash);
+  }
+  if (disabled) {
+    todo = "-" + todo;
+  }
+  return todo;
+}
