@@ -1,0 +1,39 @@
+{
+  "files": {
+    "app.js": "/hr-memo/static/js/app.f6053075.chunk.js",
+    "app.js.map": "/hr-memo/static/js/app.f6053075.chunk.js.map",
+    "runtime~app.js": "/hr-memo/static/js/runtime~app.2996f84f.js",
+    "runtime~app.js.map": "/hr-memo/static/js/runtime~app.2996f84f.js.map",
+    "static/js/2.58cb103f.chunk.js": "/hr-memo/static/js/2.58cb103f.chunk.js",
+    "static/js/2.58cb103f.chunk.js.map": "/hr-memo/static/js/2.58cb103f.chunk.js.map",
+    "fonts/AntDesign.ttf": "/hr-memo/./fonts/AntDesign.ttf",
+    "fonts/Entypo.ttf": "/hr-memo/./fonts/Entypo.ttf",
+    "fonts/Feather.ttf": "/hr-memo/./fonts/Feather.ttf",
+    "fonts/FontAwesome.ttf": "/hr-memo/./fonts/FontAwesome.ttf",
+    "fonts/FontAwesome5_Brands.ttf": "/hr-memo/./fonts/FontAwesome5_Brands.ttf",
+    "fonts/FontAwesome5_Solid.ttf": "/hr-memo/./fonts/FontAwesome5_Solid.ttf",
+    "fonts/Fontisto.ttf": "/hr-memo/./fonts/Fontisto.ttf",
+    "fonts/Foundation.ttf": "/hr-memo/./fonts/Foundation.ttf",
+    "fonts/Ionicons.ttf": "/hr-memo/./fonts/Ionicons.ttf",
+    "fonts/MaterialCommunityIcons.ttf": "/hr-memo/./fonts/MaterialCommunityIcons.ttf",
+    "fonts/MaterialIcons.ttf": "/hr-memo/./fonts/MaterialIcons.ttf",
+    "fonts/SimpleLineIcons.ttf": "/hr-memo/./fonts/SimpleLineIcons.ttf",
+    "favicon-16.png": "/hr-memo/favicon-16.png",
+    "favicon-32.png": "/hr-memo/favicon-32.png",
+    "favicon.ico": "/hr-memo/favicon.ico",
+    "index.html": "/hr-memo/index.html",
+    "manifest.json": "/hr-memo/manifest.json",
+    "serve.json": "/hr-memo/serve.json",
+    "static/js/2.58cb103f.chunk.js.LICENSE.txt": "/hr-memo/static/js/2.58cb103f.chunk.js.LICENSE.txt",
+    "static/media/arrow-down.png": "/hr-memo/static/media/arrow-down.772a5382.png",
+    "static/media/arrow-up.png": "/hr-memo/static/media/arrow-up.0b0d1af9.png",
+    "static/media/bg.png": "/hr-memo/static/media/bg.b587a02b.png",
+    "static/media/close.png": "/hr-memo/static/media/close.b65df71a.png",
+    "static/media/tick.png": "/hr-memo/static/media/tick.3a2306c7.png"
+  },
+  "entrypoints": [
+    "static/js/runtime~app.2996f84f.js",
+    "static/js/2.58cb103f.chunk.js",
+    "static/js/app.f6053075.chunk.js"
+  ]
+}
