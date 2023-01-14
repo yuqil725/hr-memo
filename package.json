@@ -5,7 +5,9 @@
     "android": "expo start --android",
     "ios": "expo start --ios",
     "web": "expo start --web",
-    "eject": "expo eject"
+    "eject": "expo eject",
+    "predeploy": "yarn expo build:web",
+    "deploy": "yarn gh-pages -d web-build"
   },
   "dependencies": {
     "@emotion/react": "^11.10.5",
@@ -27,6 +29,7 @@
     "expo-image-picker": "^14.0.2",
     "expo-status-bar": "~1.4.2",
     "expo-updates": "~0.15.6",
+    "gh-pages": "^4.0.0",
     "googleapis": "^109.0.1",
     "react": "18.1.0",
     "react-dom": "18.1.0",
@@ -58,5 +61,6 @@
   "resolutions": {
     "@types/react": "17.0.14",
     "@types/react-dom": "17.0.14"
-  }
+  },
+  "homepage": "https://yuqil725.github.io/hr-memo"
 }
