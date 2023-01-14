@@ -1,4 +1,4 @@
-import React, { useEffect, useRef, useState } from "react";
+import React, { useCallback, useRef, useState } from "react";
 import {
   View,
   Text,
@@ -10,8 +10,8 @@ import {
   Pressable,
   RefreshControl,
 } from "react-native";
-import { CardItem, Icon } from "../components";
-import styles, { DARK_GRAY, WHITE } from "../assets/styles";
+import { CardItem } from "../components";
+import styles, { WHITE } from "../assets/styles";
 import { ApiProfileCollection } from "../backend/appwrite/service/database/collection/profile";
 import { Constants } from "../Constants";
 import { objectFilterKey, objectMapKey } from "../utils/objectUtil";
@@ -30,6 +30,7 @@ import {
 } from "../redux_modules/reducer/change_search_card_screen";
 import { TextInput } from "react-native-gesture-handler";
 import { ProcessName } from "../utils/stringUtil";
+import { useFocusEffect } from "@react-navigation/native";
 
 const Search = ({ navigation }: { navigation: any }) => {
   let apiProfileCollection = new ApiProfileCollection(
@@ -45,36 +46,43 @@ const Search = ({ navigation }: { navigation: any }) => {
 
   const [refreshing, setRefreshing] = useState<boolean>(false);
 
-  useEffect(() => {
-    let promise = apiProfileCollection.listDocument();
-    promise.then(
-      function (response: any) {
-        let newSearchState = {
-          searchCard: response.documents.map((e: ISearchCard) => {
-            return objectMapKey(objectFilterKey(e, ISSearchCard), ISSearchCard);
-          }),
-          selectedCard: EMPTY_CARD,
-        };
-        if (searchCardScreen.selectedCard.documentId != EMPTY_CARD.documentId) {
-          let newSelectedCard = newSearchState.searchCard.filter(
-            (e: ISearchCard) => {
-              return e.documentId == searchCardScreen.selectedCard.documentId;
+  useFocusEffect(
+    useCallback(() => {
+      let promise = apiProfileCollection.listDocument();
+      promise.then(
+        function (response: any) {
+          let newSearchState = {
+            searchCard: response.documents.map((e: ISearchCard) => {
+              return objectMapKey(
+                objectFilterKey(e, ISSearchCard),
+                ISSearchCard
+              );
+            }),
+            selectedCard: EMPTY_CARD,
+          };
+          if (
+            searchCardScreen.selectedCard.documentId != EMPTY_CARD.documentId
+          ) {
+            let newSelectedCard = newSearchState.searchCard.filter(
+              (e: ISearchCard) => {
+                return e.documentId == searchCardScreen.selectedCard.documentId;
+              }
+            );
+            if (newSelectedCard.length == 1) {
+              newSearchState.selectedCard = newSelectedCard.at(0);
             }
-          );
-          if (newSelectedCard.length == 1) {
-            newSearchState.selectedCard = newSelectedCard.at(0);
           }
+          newSearchState.searchCard.push(NEW_CARD);
+          console.log("set search state", newSearchState);
+          store.dispatch(AChangeSearchCardScreen(newSearchState));
+        },
+        function (error: any) {
+          console.error(error);
         }
-        newSearchState.searchCard.push(NEW_CARD);
-        console.log("set search state", newSearchState);
-        store.dispatch(AChangeSearchCardScreen(newSearchState));
-      },
-      function (error: any) {
-        console.error(error);
-      }
-    );
-    setRefreshing(false);
-  }, [searchCardScreen.renderScreen]);
+      );
+      setRefreshing(false);
+    }, [searchCardScreen.renderScreen])
+  );
 
   const searchInputRef: React.MutableRefObject<TextInput | null> = useRef(null);
 

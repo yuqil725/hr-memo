@@ -42,3 +42,11 @@ export const AChangeTodo = (p: any) => {
     payload: p,
   };
 };
+
+// Session
+export const AChangeSession = (p: any) => {
+  return {
+    type: "CHANGE_SESSION",
+    payload: p,
+  };
+};

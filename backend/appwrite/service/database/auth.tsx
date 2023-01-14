@@ -1,5 +1,4 @@
-import { Models } from "appwrite";
-import { ApiBase, printPromise } from "../../api_base";
+import { ApiBase } from "../../api_base";
 
 export class ApiAuth extends ApiBase {
   constructor(apiEndpoint: string, projectId: string) {
@@ -26,12 +25,13 @@ export class ApiAuth extends ApiBase {
     return this.account.deleteSession("current");
   }
 
-  createSessionIfNoLogin(email: any, password: any) {
+  createSessionIfNoLogin(email: any, password: any, onSuccess?: any) {
     let apiAuth: any = this;
     let promise: any = this.listSession();
     promise.then(
       function (response: any) {
         console.log("Found existing sessions:", response);
+        onSuccess && onSuccess();
       },
       function (error: any) {
         console.log("Didn't find session", error);
