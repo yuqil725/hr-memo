@@ -90,6 +90,22 @@ const CardItem = (props: ISearchCard) => {
 
   // #TODO: need to change once supporting multiple images
 
+  const nameSection = () => {
+    {
+      /* NAME */
+    }
+    return (
+      <View
+        style={{
+          ...SCardItem.nameView,
+          paddingLeft: props.oneline ? 10 : undefined,
+        }}
+      >
+        <Text style={nameStyle}>{props.name}</Text>
+      </View>
+    );
+  };
+
   return (
     <Animated.View
       style={{
@@ -106,72 +122,74 @@ const CardItem = (props: ISearchCard) => {
       <View style={{ ...SCardItem.containerCardItem }}>
         {/* IMAGE */}
         {props.imagePath && props.imagePath.length > 0 ? (
-          <Image
-            source={{
-              uri: apiProfileBucket.getFilePreview(props.imagePath).toString(),
-            }}
-            style={imageStyle}
-          />
+          <React.Fragment>
+            <Image
+              source={{
+                uri: apiProfileBucket
+                  .getFilePreview(props.imagePath)
+                  .toString(),
+              }}
+              style={imageStyle}
+            />
+            {nameSection()}
+          </React.Fragment>
         ) : undefined}
 
         {props.imagePath && props.imagePath.length === 0 ? (
-          <View
-            style={{
-              ...imageStyle,
-              justifyContent: "center",
-              alignItems: "center",
-            }}
-          ></View>
-        ) : undefined}
-
-        {!props.imagePath ? (
-          <TouchableOpacity
-            onPress={() => {
-              if (!searchCardScreen.longPress) {
-                console.log("Creating a new namecard");
-                const promise = apiProfileCollection.createDocument({
-                  Name: NEW_CARD.name,
-                });
-                promise.then(
-                  function (response: any) {
-                    store.dispatch(
-                      AChangeSearchCardScreen({ renderScreen: Math.random() })
-                    );
-                  },
-                  function (error: any) {
-                    console.error(error);
-                  }
-                );
-              }
-              return;
-            }}
-          >
+          <React.Fragment>
             <View
               style={{
                 ...imageStyle,
                 justifyContent: "center",
                 alignItems: "center",
               }}
-            >
-              <Ionicons
-                name="ios-person-add"
-                size={props.oneline ? 40 : 120}
-                color={GRAY}
-                // style={{ width: "100%" }}
-              />
-            </View>
-          </TouchableOpacity>
+            ></View>
+            {nameSection()}
+          </React.Fragment>
         ) : undefined}
 
-        {/* NAME */}
-        <View
-          style={{
-            ...SCardItem.nameView,
-            paddingLeft: props.oneline ? 10 : undefined,
-          }}
-        >
-          <Text style={nameStyle}>{props.name}</Text>
-        </View>
+        {!props.imagePath ? (
+          <React.Fragment>
+            <TouchableOpacity
+              onPress={() => {
+                if (!searchCardScreen.longPress) {
+                  console.log("Creating a new namecard");
+                  const promise = apiProfileCollection.createDocument({
+                    Name: NEW_CARD.name,
+                  });
+                  promise.then(
+                    function (response: any) {
+                      store.dispatch(
+                        AChangeSearchCardScreen({ renderScreen: Math.random() })
+                      );
+                    },
+                    function (error: any) {
+                      console.error(error);
+                    }
+                  );
+                }
+                return;
+              }}
+              style={{ flexDirection: "row", width: "100%" }}
+            >
+              <View
+                style={{
+                  ...imageStyle,
+                  justifyContent: "center",
+                  alignItems: "center",
+                }}
+              >
+                <Ionicons
+                  name="ios-person-add"
+                  size={props.oneline ? 40 : 120}
+                  color={GRAY}
+                  // style={{ width: "100%" }}
+                />
+              </View>
+              {nameSection()}
+            </TouchableOpacity>
+          </React.Fragment>
+        ) : undefined}
       </View>
 
       {/* Remove Icon */}

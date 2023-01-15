@@ -186,11 +186,14 @@ const Search = ({ navigation }: { navigation: any }) => {
                 }
               }}
               onLongPress={() => {
-                store.dispatch(
-                  AChangeSearchCardScreen({
-                    longPress: !searchCardScreen.longPress,
-                  })
-                );
+                if (item.documentId != NEW_CARD.documentId) {
+                  store.dispatch(
+                    AChangeSearchCardScreen({
+                      longPress: !searchCardScreen.longPress,
+                      selectedCard: item,
+                    })
+                  );
+                }
               }}
               style={{ flex: 1 }}
             >
