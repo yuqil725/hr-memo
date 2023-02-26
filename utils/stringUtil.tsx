@@ -22,7 +22,7 @@ export const SnakeCase = (string: string) => {
 
 export const ProcessName = (name: string) => {
   name = name.trimStart();
-  return /^[A-Za-z0-9 ]*$/.test(name) ? name.toLowerCase() : ToPinYinName(name);
+  return /^[A-Za-z0-9 \-()]*$/.test(name) ? name.toLowerCase() : ToPinYinName(name);
 };
 
 export function removeTodoDate(todoStr: string) {
