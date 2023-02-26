@@ -1,23 +1,19 @@
+import { FontAwesome, Ionicons } from "@expo/vector-icons";
 import React, { useEffect, useRef } from "react";
 import {
-  Text,
-  View,
-  Image,
-  Dimensions,
-  Animated,
-  TouchableOpacity,
+  Animated, Dimensions, Image, Text, TouchableOpacity, View
 } from "react-native";
+import { useSelector } from "react-redux";
+import { DARK_GRAY, GRAY } from "../assets/styles";
 import { SCardItem } from "../assets/styles/card_item";
+import { ApiProfileCollection } from "../backend/appwrite/service/database/collection/profile";
 import { ApiProfileBucket } from "../backend/appwrite/service/storage/bucket/profile";
 import { Constants } from "../Constants";
 import { ISearchCard, ISearchCardScreen } from "../interfaces/search";
-import { FontAwesome, Ionicons } from "@expo/vector-icons";
-import { GRAY } from "../assets/styles";
 import store, { RootState } from "../redux_modules";
-import { useSelector } from "react-redux";
-import { ApiProfileCollection } from "../backend/appwrite/service/database/collection/profile";
-import { NEW_CARD } from "../redux_modules/reducer/change_search_card_screen";
 import { AChangeSearchCardScreen } from "../redux_modules/action";
+import { NEW_CARD } from "../redux_modules/reducer/change_search_card_screen";
+import Icon from "./common/Icon";
 
 const CardItem = (props: ISearchCard) => {
   // Custom styling
@@ -143,7 +139,8 @@ const CardItem = (props: ISearchCard) => {
                 justifyContent: "center",
                 alignItems: "center",
               }}
-            ></View>
+            ><Icon name={"person-circle"} size={42} color={DARK_GRAY}/></View>
+            
             {nameSection()}
           </React.Fragment>
         ) : undefined}
