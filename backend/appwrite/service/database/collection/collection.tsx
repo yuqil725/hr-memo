@@ -24,7 +24,9 @@ export class ApiCollection extends ApiDatabase {
   }
 
   listDocument() {
-    return this.database.listDocuments(this.databaseId, this.collectionId);
+    return this.database.listDocuments(this.databaseId, this.collectionId, [
+      Query.limit(100),
+    ]);
   }
 
   updateDocument(documentId: string, data: any) {
