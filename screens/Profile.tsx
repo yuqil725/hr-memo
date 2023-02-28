@@ -25,6 +25,7 @@ import store, { RootState } from "../redux_modules";
 import {
   AChangeDisplayProfile,
   AChangeMetaProfile,
+  AChangeProfileScreenActivity,
   AChangeSingleSearchCard,
 } from "../redux_modules/action";
 import {
@@ -114,6 +115,12 @@ const Profile = ({ navigation }: { navigation: any }) => {
         searchCardScreen.selectedCard.documentId !== EMPTY_CARD.documentId &&
         searchCardScreen.selectedCard.documentId !== NEW_CARD.documentId
       ) {
+        store.dispatch(
+          AChangeProfileScreenActivity({
+            tagDropdownOpen: false,
+            createNewTag: false,
+          })
+        );
         let promise = apiProfileCollection.queryByDocumentId(
           searchCardScreen.selectedCard.documentId
         );
