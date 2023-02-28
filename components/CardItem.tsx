@@ -106,9 +106,10 @@ const CardItem = (props: ISearchCard) => {
           <Text style={nameStyle}>{props.name}</Text>
         </View>
         <View style={{ ...SCardItem.tagContainer }}>
-          {props.tag?.map((t) => {
+          {props.tag?.sort().map((t, i) => {
             return (
               <View
+                key={i}
                 style={{
                   ...SCardItem.tagView,
                   backgroundColor: stringToColour(t),
