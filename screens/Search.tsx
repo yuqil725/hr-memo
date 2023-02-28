@@ -1,23 +1,19 @@
 import { useFocusEffect } from "@react-navigation/native";
-import React, { useCallback, useRef, useState } from "react";
+import React, { useCallback, useState } from "react";
 import {
-  Alert,
-  FlatList,
   ImageBackground,
-  Modal,
-  Pressable,
   RefreshControl,
   SectionList,
   Text,
   TouchableOpacity,
   View,
 } from "react-native";
-import { TextInput } from "react-native-gesture-handler";
 import { useSelector } from "react-redux";
-import styles, { WHITE } from "../assets/styles";
-import { SSearch } from "../assets/styles/search";
+import styles from "../assets/styles";
 import { ApiProfileCollection } from "../backend/appwrite/service/database/collection/profile";
 import { CardItem } from "../components";
+import { DeleteConfirmationModal } from "../components/search/deleteConfirmationModal";
+import { SearchBar } from "../components/search/searchBar";
 import { Constants } from "../Constants";
 import {
   ISearchCard,
@@ -121,53 +117,13 @@ const Search = ({ navigation }: { navigation: any }) => {
     }, [searchCardScreen.renderScreen])
   );
 
-  const searchInputRef: React.MutableRefObject<TextInput | null> = useRef(null);
-
   return (
     <ImageBackground
       source={require("../assets/images/bg.png")}
       style={styles.bg}
     >
       <View style={styles.containerMatches}>
-        <View style={styles.top}>
-          <TextInput
-            ref={searchInputRef}
-            placeholder={"Search name"}
-            onLayout={() => {
-              searchInputRef.current!.focus();
-            }}
-            style={styles.title}
-            value={searchCardScreen.searchText}
-            onChangeText={(v) => {
-              store.dispatch(AChangeSearchCardScreen({ searchText: v }));
-              if (v === " ") {
-                console.log("Creating a new namecard");
-                const promise = apiProfileCollection.createDocument({
-                  Name: NEW_CARD.name,
-                });
-                promise.then(
-                  function (response: any) {
-                    store.dispatch(
-                      AChangeSearchCardScreen({
-                        renderScreen: Math.random(),
-                        selectedCard: {
-                          name: response.Name,
-                          documentId: response.$id,
-                          imagePath: response.ImagePath,
-                        },
-                      })
-                    );
-                  },
-                  function (error: any) {
-                    console.error(error);
-                  }
-                );
-                navigation.navigate("Profile");
-                store.dispatch(AChangeSearchCardScreen({ searchText: "" }));
-              }
-            }}
-          ></TextInput>
-        </View>
+        {SearchBar(searchCardScreen, apiProfileCollection, navigation)}
 
         <SectionList
           keyboardDismissMode="on-drag"
@@ -212,74 +168,12 @@ const Search = ({ navigation }: { navigation: any }) => {
               style={{ flex: 1 }}
             >
               <CardItem {...item} oneline />
-              <View style={SSearch.centeredModel}>
-                <Modal
-                  animationType="slide"
-                  transparent={true}
-                  visible={
-                    searchCardScreen.longPress &&
-                    searchCardScreen.selectedCard.documentId == item.documentId
-                  }
-                  onRequestClose={() => {
-                    Alert.alert("Modal has been closed.");
-                    store.dispatch(
-                      AChangeSearchCardScreen({
-                        selectedCard: EMPTY_CARD,
-                      })
-                    );
-                  }}
-                >
-                  <View style={SSearch.centeredModel}>
-                    <View style={SSearch.modalView}>
-                      <Text style={styles.title}>
-                        Are you sure you want to delete{" "}
-                        <Text style={styles.bodyBold}>{item.name}'s</Text>{" "}
-                        namecard?
-                      </Text>
-                      <View style={{ flexDirection: "row" }}>
-                        <Pressable
-                          style={styles.roundedButtonSecondary}
-                          onPress={() => {
-                            console.log("Deleting card", item);
-                            apiProfileCollection.deleteDocument(
-                              item.documentId
-                            );
-                            let newSearchCard = [
-                              ...searchCardScreen.searchCard,
-                            ].filter((i) => {
-                              return i.documentId != item.documentId;
-                            });
-                            store.dispatch(
-                              AChangeSearchCardScreen({
-                                searchCard: newSearchCard,
-                                selectedCard: EMPTY_CARD,
-                              })
-                            );
-                          }}
-                        >
-                          <Text style={{ ...styles.bodyBold, color: WHITE }}>
-                            Yes
-                          </Text>
-                        </Pressable>
-                        <Pressable
-                          style={styles.roundedButtonPrimary}
-                          onPress={() =>
-                            store.dispatch(
-                              AChangeSearchCardScreen({
-                                selectedCard: EMPTY_CARD,
-                              })
-                            )
-                          }
-                        >
-                          <Text style={{ ...styles.bodyBold, color: WHITE }}>
-                            No
-                          </Text>
-                        </Pressable>
-                      </View>
-                    </View>
-                  </View>
-                </Modal>
-              </View>
+              {/* Modal */}
+              {DeleteConfirmationModal(
+                searchCardScreen,
+                apiProfileCollection,
+                item
+              )}
             </TouchableOpacity>
           )}
         />
