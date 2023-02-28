@@ -3,6 +3,7 @@ export const ISSearchCard = {
   Name: "name",
   $id: "documentId",
   ImagePath: "imagePath",
+  Tag: "tag",
 };
 
 export interface ISearchCard {
@@ -10,6 +11,7 @@ export interface ISearchCard {
   documentId: string;
   imagePath?: any;
   oneline?: boolean;
+  tag?: string[];
 }
 
 export interface ISearchCardScreen {
@@ -19,4 +21,5 @@ export interface ISearchCardScreen {
   searchText: string;
   // it is string because we only need its value to be changed
   renderScreen?: number;
+  tagSelection?: string[];
 }

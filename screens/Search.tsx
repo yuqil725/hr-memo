@@ -70,6 +70,19 @@ const Search = ({ navigation }: { navigation: any }) => {
       let promise = apiProfileCollection.listDocument();
       promise.then(
         function (response: any) {
+          let tagSelection = [
+            ...new Set(
+              response.documents
+                .map((e: any) => {
+                  return e.Tag.filter((e: string) => e.length > 0);
+                })
+                .reduce(
+                  (accumulator: string[], value: string[]) =>
+                    accumulator.concat(value),
+                  []
+                )
+            ),
+          ].sort();
           let newSearchState = {
             searchCard: response.documents
               .map((e: ISearchCard) => {
@@ -82,6 +95,7 @@ const Search = ({ navigation }: { navigation: any }) => {
                 return ProcessName(a.name) < ProcessName(b.name) ? -1 : 1;
               }),
             selectedCard: EMPTY_CARD,
+            tagSelection: tagSelection,
           };
           if (
             searchCardScreen.selectedCard.documentId != EMPTY_CARD.documentId

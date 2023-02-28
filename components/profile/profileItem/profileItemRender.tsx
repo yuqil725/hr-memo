@@ -10,11 +10,12 @@ import {
   IProfileScreenActivity,
   ISProfileDisplayItem,
 } from "../../../interfaces/profile";
-import { ISSearchCard } from "../../../interfaces/search";
+import { ISearchCardScreen, ISSearchCard } from "../../../interfaces/search";
 import store from "../../../redux_modules";
 import {
   AChangeDisplayProfile,
   AChangeProfileScreenActivity,
+  AChangeSearchCardScreen,
   AChangeSingleSearchCard,
 } from "../../../redux_modules/action";
 import { TsToStr } from "../../../utils/dateUtil";
@@ -26,7 +27,8 @@ export const ProfileItemRender = (
   profileItem: IProfileItem,
   profileScreenActivity: IProfileScreenActivity,
   key: any,
-  value: any
+  value: any,
+  searchCardScreen: ISearchCardScreen
 ) => {
   let apiPofile = new ApiProfileCollection(
     Constants.API_ENDPOINT,
@@ -34,7 +36,6 @@ export const ProfileItemRender = (
     Constants.DB_NAMECARD_ID,
     Constants.C_PROFILE_ID
   );
-
   const addDateString = (s: string, prefix: string = " ") => {
     if (s.startsWith(prefix)) {
       s = TsToStr(Date.now()) + s;
@@ -78,6 +79,7 @@ export const ProfileItemRender = (
               multiple
               autoScroll
               mode="BADGE"
+              dropDownDirection="BOTTOM"
               extendableBadgeContainer
               textStyle={SProfileItem.infoContent}
               style={{
@@ -120,6 +122,116 @@ export const ProfileItemRender = (
                 });
               }}
             />
+          );
+        }
+        case ISProfileDisplayItem.Tag: {
+          const addNewTagStr = "Add new tag";
+          return (
+            <React.Fragment>
+              {profileScreenActivity.createNewTag ? (
+                <TextInput
+                  placeholder={addNewTagStr}
+                  onBlur={(e) => {
+                    const text = e.nativeEvent.text.trimStart();
+                    if (text.length > 0) {
+                      let tagSelection = searchCardScreen.tagSelection!;
+                      tagSelection = [...tagSelection, text];
+                      store.dispatch(
+                        AChangeSearchCardScreen({ tagSelection: tagSelection })
+                      );
+
+                      const newArray = [...profileItem.display.tag!, text];
+                      store.dispatch(
+                        AChangeDisplayProfile({
+                          [key]: newArray,
+                        })
+                      );
+                      apiPofile.updateDocument(profileItem.meta.documentId, {
+                        [Pascalize(key)]: newArray,
+                      });
+                    }
+                    store.dispatch(
+                      AChangeProfileScreenActivity({
+                        tagDropdownOpen: false,
+                        createNewTag: false,
+                      })
+                    );
+                  }}
+                />
+              ) : (
+                <DropDownPicker
+                  multiple
+                  autoScroll
+                  mode="BADGE"
+                  dropDownDirection="BOTTOM"
+                  extendableBadgeContainer
+                  textStyle={SProfileItem.infoContent}
+                  style={{
+                    borderWidth: 0,
+                    paddingLeft: 0,
+                    paddingTop: 0,
+                    paddingBottom: 0,
+                  }}
+                  open={profileScreenActivity.tagDropdownOpen}
+                  value={
+                    profileItem.display.tag ? profileItem.display.tag : null
+                  }
+                  items={[addNewTagStr, ...searchCardScreen.tagSelection!].map(
+                    function (e, i) {
+                      return { label: e, value: e };
+                    }
+                  )}
+                  setOpen={() => {
+                    store.dispatch(
+                      AChangeProfileScreenActivity({
+                        tagDropdownOpen: !profileScreenActivity.tagDropdownOpen,
+                      })
+                    );
+                  }}
+                  setValue={(callback: any) => {
+                    return callback(profileItem.display.tag);
+                  }}
+                  onSelectItem={(items) => {
+                    const newItem = items
+                      .map((i: any) => {
+                        if (
+                          profileItem.display.tag &&
+                          profileItem.display.tag.indexOf(i.value) === -1
+                        )
+                          return i;
+                      })
+                      .filter((n) => n);
+                    console.log(items, profileItem.display.tag, newItem);
+                    let newArray = items.map((e) => e.value);
+                    if (newItem.length > 0) {
+                      // if selected a new item, check if this item is "add new item"
+                      newArray = newItem
+                        .map(function (e, i) {
+                          if (e.value == addNewTagStr) {
+                            store.dispatch(
+                              AChangeProfileScreenActivity({
+                                createNewTag: true,
+                              })
+                            );
+                            return null;
+                          }
+                          return e.value;
+                        })
+                        .filter((n) => n);
+                      newArray = [...profileItem.display.tag!, ...newArray];
+                    }
+                    store.dispatch(
+                      AChangeDisplayProfile({
+                        [key]: newArray,
+                      })
+                    );
+                    apiPofile.updateDocument(profileItem.meta.documentId, {
+                      [Pascalize(key)]: newArray,
+                    });
+                  }}
+                />
+              )}
+            </React.Fragment>
           );
         }
         case ISProfileDisplayItem.ImagePath: {

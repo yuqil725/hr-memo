@@ -2,7 +2,11 @@ import { AnyAction } from "redux";
 import { IProfileScreenActivity } from "../../interfaces/profile";
 
 const RChangeProfileScreenActivity = (
-  state: IProfileScreenActivity = { friendshipDropdownOpen: false },
+  state: IProfileScreenActivity = {
+    friendshipDropdownOpen: false,
+    tagDropdownOpen: false,
+    createNewTag: false,
+  },
   action: AnyAction
 ) => {
   switch (action.type) {

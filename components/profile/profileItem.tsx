@@ -8,6 +8,7 @@ import {
   IProfileScreenActivity,
   ISProfileDisplayItem,
 } from "../../interfaces/profile";
+import { ISearchCardScreen } from "../../interfaces/search";
 import { RootState } from "../../redux_modules";
 import { Pascalize } from "../../utils/stringUtil";
 import { ProfileItemRender } from "./profileItem/profileItemRender";
@@ -19,6 +20,9 @@ const ProfileItem = () => {
   let profileDisplayItem: IProfileDisplayItem = profileItem.display;
   let profileScreenActivity: IProfileScreenActivity = useSelector(
     (state: RootState) => state.profileScreenActivity
+  );
+  let searchCardScreen: ISearchCardScreen = useSelector(
+    (state: RootState) => state.searchCardScreen
   );
 
   return (
@@ -38,8 +42,9 @@ const ProfileItem = () => {
                 ...SProfileItem.infoSectionView,
                 zIndex:
                   Object.keys(profileDisplayItem).at(index) ===
-                  ISProfileDisplayItem.FriendshipStage
-                    ? 1
+                    ISProfileDisplayItem.FriendshipStage ||
+                  ISProfileDisplayItem.Tag
+                    ? 100 - index
                     : 0,
               }}
             >
@@ -55,7 +60,8 @@ const ProfileItem = () => {
                   profileItem,
                   profileScreenActivity,
                   Object.keys(profileDisplayItem).at(index),
-                  value
+                  value,
+                  searchCardScreen
                 )}
               </View>
             </View>

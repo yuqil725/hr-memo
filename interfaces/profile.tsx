@@ -2,6 +2,7 @@
 export const ISProfileDisplayItem = {
   Name: "name",
   FriendshipStage: "friendshipStage",
+  Tag: "tag",
   LivingAddress: "livingAddress",
   Education: "education",
   Activity: "activity",
@@ -14,6 +15,8 @@ export interface IProfileDisplayItem {
   name: string;
   livingAddress?: string[];
   friendshipStage?: string[];
+  tag?: string[];
+  tagSelection?: string[];
   education?: string[];
   activity?: string[];
   comment?: string[];
@@ -37,6 +40,8 @@ export interface IProfileItem {
 
 export interface IProfileScreenActivity {
   friendshipDropdownOpen: boolean;
+  tagDropdownOpen: boolean;
+  createNewTag: boolean;
   focusItem?: { k: string; index: number };
 }
 
