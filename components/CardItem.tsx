@@ -1,10 +1,15 @@
 import { FontAwesome, Ionicons } from "@expo/vector-icons";
 import React, { useEffect, useRef } from "react";
 import {
-  Animated, Dimensions, Image, Text, TouchableOpacity, View
+  Animated,
+  Dimensions,
+  Image,
+  Text,
+  TouchableOpacity,
+  View,
 } from "react-native";
 import { useSelector } from "react-redux";
-import { DARK_GRAY, GRAY } from "../assets/styles";
+import { DARK_GRAY, GRAY, stringToColour } from "../assets/styles";
 import { SCardItem } from "../assets/styles/card_item";
 import { ApiProfileCollection } from "../backend/appwrite/service/database/collection/profile";
 import { ApiProfileBucket } from "../backend/appwrite/service/storage/bucket/profile";
@@ -97,7 +102,23 @@ const CardItem = (props: ISearchCard) => {
           paddingLeft: props.oneline ? 10 : undefined,
         }}
       >
-        <Text style={nameStyle}>{props.name}</Text>
+        <View>
+          <Text style={nameStyle}>{props.name}</Text>
+        </View>
+        <View style={{ ...SCardItem.tagContainer }}>
+          {props.tag?.map((t) => {
+            return (
+              <View
+                style={{
+                  ...SCardItem.tagView,
+                  backgroundColor: stringToColour(t),
+                }}
+              >
+                <Text style={{ ...SCardItem.tagText }}>{t}</Text>
+              </View>
+            );
+          })}
+        </View>
       </View>
     );
   };
@@ -116,7 +137,7 @@ const CardItem = (props: ISearchCard) => {
       }}
     >
       <View style={{ ...SCardItem.containerCardItem }}>
-        {/* IMAGE */}
+        {/* namecard with image */}
         {props.imagePath && props.imagePath.length > 0 ? (
           <React.Fragment>
             <Image
@@ -131,6 +152,7 @@ const CardItem = (props: ISearchCard) => {
           </React.Fragment>
         ) : undefined}
 
+        {/* namecard without image */}
         {props.imagePath && props.imagePath.length === 0 ? (
           <React.Fragment>
             <View
@@ -139,12 +161,15 @@ const CardItem = (props: ISearchCard) => {
                 justifyContent: "center",
                 alignItems: "center",
               }}
-            ><Icon name={"person-circle"} size={42} color={DARK_GRAY}/></View>
-            
+            >
+              <Icon name={"person-circle"} size={42} color={DARK_GRAY} />
+            </View>
+
             {nameSection()}
           </React.Fragment>
         ) : undefined}
 
+        {/* placeholder namecard used to create new namecard */}
         {!props.imagePath ? (
           <React.Fragment>
             <TouchableOpacity

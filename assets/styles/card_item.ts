@@ -96,4 +96,19 @@ export const SCardItem = StyleSheet.create({
   nameView: {
     flex: 1,
   },
+  tagContainer: {
+    flex: 1,
+    flexDirection: "row",
+    paddingBottom: 4,
+  },
+  tagView: {
+    marginRight: 10,
+    backgroundColor: GRAY,
+    padding: 4,
+    borderRadius: 5,
+  },
+  tagText: {
+    color: WHITE,
+    fontSize: 13,
+  },
 });
