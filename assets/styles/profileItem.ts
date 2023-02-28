@@ -72,6 +72,13 @@ let SProfileItem = StyleSheet.create({
     color: DARK_GRAY,
     fontSize: 18,
   },
+  addNewTagInput: {
+    width: "100%",
+    color: DARK_GRAY,
+    fontSize: 18,
+    paddingTop: 8,
+    paddingBottom: 8,
+  },
 });
 
 export default SProfileItem;

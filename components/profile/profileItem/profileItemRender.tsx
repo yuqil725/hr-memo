@@ -130,7 +130,9 @@ export const ProfileItemRender = (
             <React.Fragment>
               {profileScreenActivity.createNewTag ? (
                 <TextInput
+                  autoFocus
                   placeholder={addNewTagStr}
+                  style={SProfileItem.addNewTagInput}
                   onBlur={(e) => {
                     const text = e.nativeEvent.text.trimStart();
                     if (text.length > 0) {
@@ -140,7 +142,10 @@ export const ProfileItemRender = (
                         AChangeSearchCardScreen({ tagSelection: tagSelection })
                       );
 
-                      const newArray = [...profileItem.display.tag!, text];
+                      const newArray = [
+                        ...profileItem.display.tag!,
+                        text,
+                      ].filter((n) => typeof n === "string" && n.length > 0);
                       store.dispatch(
                         AChangeDisplayProfile({
                           [key]: newArray,
@@ -171,6 +176,7 @@ export const ProfileItemRender = (
                     paddingLeft: 0,
                     paddingTop: 0,
                     paddingBottom: 0,
+                    minHeight: 40,
                   }}
                   open={profileScreenActivity.tagDropdownOpen}
                   value={
@@ -192,33 +198,16 @@ export const ProfileItemRender = (
                     return callback(profileItem.display.tag);
                   }}
                   onSelectItem={(items) => {
-                    const newItem = items
-                      .map((i: any) => {
-                        if (
-                          profileItem.display.tag &&
-                          profileItem.display.tag.indexOf(i.value) === -1
-                        )
-                          return i;
-                      })
-                      .filter((n) => n);
-                    console.log(items, profileItem.display.tag, newItem);
+                    console.log("selectItem");
                     let newArray = items.map((e) => e.value);
-                    if (newItem.length > 0) {
-                      // if selected a new item, check if this item is "add new item"
-                      newArray = newItem
-                        .map(function (e, i) {
-                          if (e.value == addNewTagStr) {
-                            store.dispatch(
-                              AChangeProfileScreenActivity({
-                                createNewTag: true,
-                              })
-                            );
-                            return null;
-                          }
-                          return e.value;
+                    const index = newArray.indexOf(addNewTagStr);
+                    if (index !== -1) {
+                      store.dispatch(
+                        AChangeProfileScreenActivity({
+                          createNewTag: true,
                         })
-                        .filter((n) => n);
-                      newArray = [...profileItem.display.tag!, ...newArray];
+                      );
+                      newArray.splice(index, 1);
                     }
                     store.dispatch(
                       AChangeDisplayProfile({
