@@ -8,11 +8,14 @@ import {
   TouchableOpacity,
   View,
 } from "react-native";
+import { RectButton } from "react-native-gesture-handler";
 import { useSelector } from "react-redux";
-import styles from "../assets/styles";
+import styles, { DARK_GRAY, GRAY } from "../assets/styles";
+import { SSearch } from "../assets/styles/search";
 import { ApiProfileCollection } from "../backend/appwrite/service/database/collection/profile";
-import { CardItem } from "../components";
+import { CardItem, Icon } from "../components";
 import { DeleteConfirmationModal } from "../components/search/deleteConfirmationModal";
+import { FilterTag } from "../components/search/filterTag";
 import { SearchBar } from "../components/search/searchBar";
 import { Constants } from "../Constants";
 import {
@@ -42,18 +45,34 @@ const Search = ({ navigation }: { navigation: any }) => {
   );
 
   const [refreshing, setRefreshing] = useState<boolean>(false);
+  const [filterButton, setFilterButton] = useState<boolean>(false);
 
   function namecardArrayToSection(namecardArray: ISearchCard[]) {
     const namecardObject = namecardArray.reduce((acc: any, nc: any) => {
-      const processedName = ProcessName(nc.name);
-      processedName.startsWith(
-        searchCardScreen.searchText
-          ? searchCardScreen.searchText.toLowerCase()
-          : " "
-      );
-      const firstLetter = processedName.at(0) ? processedName.at(0) : "";
-      acc[firstLetter] = acc[firstLetter] || [];
-      acc[firstLetter].push(nc);
+      const HaveAllTagSelected = () => {
+        const res =
+          nc.tag.reduce((acc: any, t: string) => {
+            if (searchCardScreen.tagSelected.indexOf(t) !== -1) {
+              return acc + 1;
+            }
+            return acc;
+          }, 0) === searchCardScreen.tagSelected.length;
+        return res;
+      };
+      if (
+        searchCardScreen.tagSelected.length == 0 ||
+        (nc.tag !== undefined && HaveAllTagSelected())
+      ) {
+        const processedName = ProcessName(nc.name);
+        processedName.startsWith(
+          searchCardScreen.searchText
+            ? searchCardScreen.searchText.toLowerCase()
+            : " "
+        );
+        const firstLetter = processedName.at(0) ? processedName.at(0) : "";
+        acc[firstLetter] = acc[firstLetter] || [];
+        acc[firstLetter].push(nc);
+      }
       return acc;
     }, {});
     return Object.keys(namecardObject).map((k) => {
@@ -92,6 +111,7 @@ const Search = ({ navigation }: { navigation: any }) => {
               }),
             selectedCard: EMPTY_CARD,
             tagSelection: tagSelection,
+            tagSelected: [],
           };
           if (
             searchCardScreen.selectedCard.documentId != EMPTY_CARD.documentId
@@ -123,60 +143,82 @@ const Search = ({ navigation }: { navigation: any }) => {
       style={styles.bg}
     >
       <View style={styles.containerMatches}>
-        {SearchBar(searchCardScreen, apiProfileCollection, navigation)}
-
-        <SectionList
-          keyboardDismissMode="on-drag"
-          refreshControl={
-            <RefreshControl
-              refreshing={refreshing}
-              onRefresh={() => {
-                store.dispatch(
-                  AChangeSearchCardScreen({ renderScreen: Math.random() })
-                );
-                setRefreshing(true);
-              }}
-            />
-          }
-          sections={namecardArrayToSection(searchCardScreen.searchCard)}
-          renderSectionHeader={({ section: { title } }) => (
-            <Text style={styles.title}>{title}</Text>
-          )}
-          keyExtractor={(item, index) => index.toString()}
-          renderItem={({ item }) => (
-            <TouchableOpacity
+        <View style={SSearch.searchBarContainer}>
+          <View style={SSearch.searchBarView}>
+            {SearchBar(searchCardScreen, apiProfileCollection, navigation)}
+          </View>
+          <View style={SSearch.filterView}>
+            <RectButton
               onPress={() => {
-                store.dispatch(
-                  AChangeSearchCardScreen({
-                    selectedCard: item,
-                  })
-                );
-                if (!searchCardScreen.longPress) {
-                  navigation.navigate("Profile");
-                }
+                setFilterButton(!filterButton);
               }}
-              onLongPress={() => {
-                if (item.documentId != NEW_CARD.documentId) {
+            >
+              <Icon
+                name="filter"
+                size={24}
+                color={filterButton ? DARK_GRAY : GRAY}
+              />
+            </RectButton>
+          </View>
+        </View>
+        {filterButton && searchCardScreen.tagSelection
+          ? FilterTag(searchCardScreen)
+          : undefined}
+
+        <View style={{ flex: 1 }}>
+          <SectionList
+            keyboardDismissMode="on-drag"
+            refreshControl={
+              <RefreshControl
+                refreshing={refreshing}
+                onRefresh={() => {
+                  store.dispatch(
+                    AChangeSearchCardScreen({ renderScreen: Math.random() })
+                  );
+                  setRefreshing(true);
+                }}
+              />
+            }
+            sections={namecardArrayToSection(searchCardScreen.searchCard)}
+            renderSectionHeader={({ section: { title } }) => (
+              <Text style={styles.title}>{title}</Text>
+            )}
+            keyExtractor={(item, index) => index.toString()}
+            renderItem={({ item }) => (
+              <TouchableOpacity
+                onPress={() => {
                   store.dispatch(
                     AChangeSearchCardScreen({
-                      longPress: !searchCardScreen.longPress,
                       selectedCard: item,
                     })
                   );
-                }
-              }}
-              style={{ flex: 1 }}
-            >
-              <CardItem {...item} oneline />
-              {/* Modal */}
-              {DeleteConfirmationModal(
-                searchCardScreen,
-                apiProfileCollection,
-                item
-              )}
-            </TouchableOpacity>
-          )}
-        />
+                  if (!searchCardScreen.longPress) {
+                    navigation.navigate("Profile");
+                  }
+                }}
+                onLongPress={() => {
+                  if (item.documentId != NEW_CARD.documentId) {
+                    store.dispatch(
+                      AChangeSearchCardScreen({
+                        longPress: !searchCardScreen.longPress,
+                        selectedCard: item,
+                      })
+                    );
+                  }
+                }}
+                style={{ flex: 1 }}
+              >
+                <CardItem {...item} oneline />
+                {/* Modal */}
+                {DeleteConfirmationModal(
+                  searchCardScreen,
+                  apiProfileCollection,
+                  item
+                )}
+              </TouchableOpacity>
+            )}
+          />
+        </View>
       </View>
     </ImageBackground>
   );

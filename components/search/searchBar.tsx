@@ -14,6 +14,31 @@ export const SearchBar = (
   navigation: any
 ) => {
   const searchInputRef: React.MutableRefObject<TextInput | null> = useRef(null);
+  const createNewProfile = () => {
+    console.log("Creating a new namecard");
+    const promise = apiProfileCollection.createDocument({
+      Name: NEW_CARD.name,
+    });
+    promise.then(
+      function (response: any) {
+        store.dispatch(
+          AChangeSearchCardScreen({
+            renderScreen: Math.random(),
+            selectedCard: {
+              name: response.Name,
+              documentId: response.$id,
+              imagePath: response.ImagePath,
+            },
+          })
+        );
+      },
+      function (error: any) {
+        console.error(error);
+      }
+    );
+    navigation.navigate("Profile");
+    store.dispatch(AChangeSearchCardScreen({ searchText: "" }));
+  };
   return (
     <View style={styles.top}>
       <TextInput
@@ -27,29 +52,7 @@ export const SearchBar = (
         onChangeText={(v) => {
           store.dispatch(AChangeSearchCardScreen({ searchText: v }));
           if (v === " ") {
-            console.log("Creating a new namecard");
-            const promise = apiProfileCollection.createDocument({
-              Name: NEW_CARD.name,
-            });
-            promise.then(
-              function (response: any) {
-                store.dispatch(
-                  AChangeSearchCardScreen({
-                    renderScreen: Math.random(),
-                    selectedCard: {
-                      name: response.Name,
-                      documentId: response.$id,
-                      imagePath: response.ImagePath,
-                    },
-                  })
-                );
-              },
-              function (error: any) {
-                console.error(error);
-              }
-            );
-            navigation.navigate("Profile");
-            store.dispatch(AChangeSearchCardScreen({ searchText: "" }));
+            createNewProfile();
           }
         }}
       ></TextInput>
