@@ -64,14 +64,17 @@ const Search = ({ navigation }: { navigation: any }) => {
         (nc.tag !== undefined && HaveAllTagSelected())
       ) {
         const processedName = ProcessName(nc.name);
-        processedName.startsWith(
-          searchCardScreen.searchText
-            ? searchCardScreen.searchText.toLowerCase()
-            : " "
-        );
-        const firstLetter = processedName.at(0) ? processedName.at(0) : "";
-        acc[firstLetter] = acc[firstLetter] || [];
-        acc[firstLetter].push(nc);
+        if (
+          processedName.startsWith(
+            searchCardScreen.searchText
+              ? searchCardScreen.searchText.toLowerCase()
+              : ""
+          )
+        ) {
+          const firstLetter = processedName.at(0) ? processedName.at(0) : "";
+          acc[firstLetter] = acc[firstLetter] || [];
+          acc[firstLetter].push(nc);
+        }
       }
       return acc;
     }, {});
