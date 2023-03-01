@@ -24,7 +24,6 @@ export const STodo = StyleSheet.create({
   },
   highlightDateView: {
     backgroundColor: STAR_ACTIONS,
-    borderRadius: 10,
     padding: 10,
   },
   normalDateView: {

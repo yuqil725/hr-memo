@@ -40,6 +40,11 @@ export function convertTodoItemToTodoList(todoItems: ITodoItems[]) {
             }
             disabled = true;
           }
+          // change date from 2023/3/2 to 2023/03/02
+          date = date
+            .split("/")
+            .map((num: string) => (num.length == 1 ? "0" + num : num))
+            .join("/");
           const newItem = {
             documentId: i.documentId,
             name: i.name,
@@ -129,6 +134,15 @@ export const TodoSection = (refreshControl: any) => {
   );
 
   const todayStr = TsToStr(Date.now()).slice(1, -1);
+  let uncompleteDate = [...Object.keys(todoList)].filter(
+    (date: string) =>
+      todoList[date].filter((v: ITodoItem) => !v.disabled).length > 0
+  );
+  uncompleteDate.push(todayStr);
+  uncompleteDate.sort((a: any, b: any) => {
+    return a > b ? -1 : 1;
+  });
+  const scrollToDate = Math.max(uncompleteDate.indexOf(todayStr) - 1, 0);
 
   const [isEnabled, setIsEnabled] = useState(false);
   const toggleSwitch = () => setIsEnabled((previousState) => !previousState);
@@ -156,59 +170,64 @@ export const TodoSection = (refreshControl: any) => {
           refreshControl={refreshControl}
         >
           {Object.keys(todoList).map((k, index) => {
-            return (
-              <TouchableOpacity
-                key={index}
-                onLayout={(event: any) => {
-                  const layout = event.nativeEvent.layout;
-                  if (k == todayStr) {
-                    setTodayY(layout.y);
-                    scrollRef.current!.scrollTo({
-                      y: layout.y,
-                      animated: true,
-                    });
-                  }
-                }}
-              >
-                <View
-                  style={
-                    todayStr == k
-                      ? STodo.highlightDateView
-                      : STodo.normalDateView
-                  }
+            if (
+              todoList[k].filter((v: ITodoItem) => !v.disabled || isEnabled)
+                .length > 0
+            ) {
+              return (
+                <TouchableOpacity
+                  key={index}
+                  onLayout={(event: any) => {
+                    const layout = event.nativeEvent.layout;
+                    if (index == scrollToDate) {
+                      setTodayY(layout.y);
+                      scrollRef.current!.scrollTo({
+                        y: layout.y,
+                        animated: true,
+                      });
+                    }
+                  }}
                 >
-                  <View>
-                    <Text style={styles.title}>{k}</Text>
-                  </View>
+                  <View
+                    style={
+                      todayStr > k
+                        ? STodo.highlightDateView
+                        : STodo.normalDateView
+                    }
+                  >
+                    <View>
+                      <Text style={styles.title}>{k}</Text>
+                    </View>
 
-                  {todoList[k].map((v: ITodoItem, index: number) => {
-                    return isEnabled || (!isEnabled && !v.disabled) ? (
-                      <ProfileOneLine
-                        key={index}
-                        image={
-                          v.imagePath
-                            ? apiProfileBucket
-                                .getFilePreview(v.imagePath)
-                                .toString()
-                            : undefined
-                        }
-                        name={v.name}
-                        lastMessage={removeTodoDate(v.todo)}
-                        disabled={v.disabled}
-                        onPress={() => {
-                          toggleTodo(
-                            k,
-                            todoList[k],
-                            index,
-                            apiProfileCollection
-                          );
-                        }}
-                      />
-                    ) : undefined;
-                  })}
-                </View>
-              </TouchableOpacity>
-            );
+                    {todoList[k].map((v: ITodoItem, index: number) => {
+                      return isEnabled || (!isEnabled && !v.disabled) ? (
+                        <ProfileOneLine
+                          key={index}
+                          image={
+                            v.imagePath
+                              ? apiProfileBucket
+                                  .getFilePreview(v.imagePath)
+                                  .toString()
+                              : undefined
+                          }
+                          name={v.name}
+                          lastMessage={removeTodoDate(v.todo)}
+                          disabled={v.disabled}
+                          onPress={() => {
+                            toggleTodo(
+                              k,
+                              todoList[k],
+                              index,
+                              apiProfileCollection
+                            );
+                          }}
+                        />
+                      ) : undefined;
+                    })}
+                  </View>
+                </TouchableOpacity>
+              );
+            }
           })}
         </ScrollView>
       </View>
