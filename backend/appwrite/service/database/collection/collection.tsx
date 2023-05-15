@@ -23,9 +23,10 @@ export class ApiCollection extends ApiDatabase {
     );
   }
 
-  listDocument() {
+  listDocument(page = 0) {
     return this.database.listDocuments(this.databaseId, this.collectionId, [
       Query.limit(100),
+      Query.offset(100 * page),
     ]);
   }
 

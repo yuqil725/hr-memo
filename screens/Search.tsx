@@ -83,14 +83,33 @@ const Search = ({ navigation }: { navigation: any }) => {
     });
   }
 
+  const fetchAllDocuments = async (
+    page = 0,
+    documents: any[] = []
+  ): Promise<any[]> => {
+    const response = await apiProfileCollection.listDocument(page);
+
+    // Combine the documents we already have with the new batch
+    const newDocuments = documents.concat(response.documents);
+
+    // If we got less than 100 documents, we're on the last page and can return the documents
+    if (response.documents.length < 100) {
+      return newDocuments;
+    }
+
+    // Otherwise, fetch the next page
+    return fetchAllDocuments(page + 1, newDocuments);
+  };
+
   useFocusEffect(
     useCallback(() => {
-      let promise = apiProfileCollection.listDocument();
+      let promise = fetchAllDocuments();
       promise.then(
         function (response: any) {
+          console.log(response);
           let tagSelection = [
             ...new Set(
-              response.documents
+              response
                 .map((e: any) => {
                   return e.Tag.filter((e: string) => e.length > 0);
                 })
@@ -102,7 +121,7 @@ const Search = ({ navigation }: { navigation: any }) => {
             ),
           ].sort();
           let newSearchState = {
-            searchCard: response.documents
+            searchCard: response
               .map((e: ISearchCard) => {
                 return objectMapKey(
                   objectFilterKey(e, ISSearchCard),
